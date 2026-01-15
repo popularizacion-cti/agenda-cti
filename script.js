@@ -1,10 +1,23 @@
 const ENDPOINT = "/.netlify/functions/get-activities";
 
-// ---- helper: dd/mm/yyyy → Date ----
-function parseFecha(fechaStr) {
+function parseFechaFlexible(fechaStr) {
   if (!fechaStr) return null;
-  const [dd, mm, yyyy] = fechaStr.trim().split("/");
-  return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+
+  // limpiar espacios raros
+  fechaStr = fechaStr.trim();
+
+  // yyyy-mm-dd
+  if (fechaStr.includes("-")) {
+    return new Date(fechaStr + "T00:00:00");
+  }
+
+  // dd/mm/yyyy
+  if (fechaStr.includes("/")) {
+    const [dd, mm, yyyy] = fechaStr.split("/");
+    return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
+  }
+
+  return null;
 }
 
 fetch(ENDPOINT)
@@ -21,52 +34,28 @@ fetch(ENDPOINT)
       return obj;
     });
 
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    const fin = new Date(hoy);
-    fin.setDate(hoy.getDate() + 7);
-
-    const filteredActivities = activities.filter(act => {
-      if (act["APROBADO"] !== "SI") return false;
-
-      const fechaActividad = parseFecha(act["FECHA"]);
-      if (!fechaActividad) return false;
-
-      return fechaActividad >= hoy && fechaActividad <= fin;
-    });
-
-    renderActivities(filteredActivities);
-  })
-  .catch(err => {
-    document.getElementById("agenda").innerText =
-      "Error cargando actividades";
-    console.error(err);
+    renderDebug(activities);
   });
 
-function renderActivities(activities) {
+function renderDebug(activities) {
   const container = document.getElementById("agenda");
-  container.innerHTML = "";
+  container.innerHTML = "<h2>DEBUG FECHAS</h2>";
 
-  if (activities.length === 0) {
-    container.innerHTML =
-      "<p>No hay actividades programadas en los próximos 7 días.</p>";
-    return;
-  }
+  const hoy = new Date();
+  hoy.setHours(0,0,0,0);
 
   activities.forEach(act => {
-    const div = document.createElement("div");
-    div.style.marginBottom = "1rem";
+    const raw = act["FECHA"];
+    const parsed = parseFechaFlexible(raw);
 
-    div.innerHTML = `
-      <h3>${act["NOMBRE DE LA ACTIVIDAD"]}</h3>
-      <p><strong>Fecha:</strong> ${act["FECHA"]} ${act["HORA"]}</p>
-      <p><strong>Modalidad:</strong> ${act["MODALIDAD"]}</p>
-      <p>${act["RESUMEN"]}</p>
-      <a href="${act["LUGAR / LINK"]}" target="_blank">Ver evento</a>
+    const p = document.createElement("p");
+    p.innerHTML = `
+      <strong>${act["NOMBRE DE LA ACTIVIDAD"]}</strong><br>
+      FECHA RAW: <code>${raw}</code><br>
+      FECHA PARSEADA: <code>${parsed}</code><br>
+      ES >= HOY?: <code>${parsed >= hoy}</code>
       <hr>
     `;
-
-    container.appendChild(div);
+    container.appendChild(p);
   });
 }
