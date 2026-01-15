@@ -2,16 +2,66 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Agenda CTI</title>
+  <title>Agenda CTI – Semana actual</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f8f9fa;
+    }
+
+    h1 {
+      color: #003366;
+    }
+
+    .actividad {
+      background: #ffffff;
+      border-left: 5px solid #0066cc;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .fecha {
+      font-weight: bold;
+      color: #0066cc;
+    }
+
+    .institucion {
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .modalidad {
+      font-size: 0.85em;
+      color: #333;
+      margin-top: 5px;
+    }
+
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+
+    .sin-actividades {
+      background: #fff3cd;
+      padding: 15px;
+      border-left: 5px solid #ffc107;
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>Agenda de Actividades CTI</h1>
+  <h1>Agenda CTI – Actividades de esta semana</h1>
 
-  <div id="agenda">
-    Cargando actividades...
+  <div id="agenda" class="loading">
+    Cargando actividades…
   </div>
 
   <script src="script.js"></script>
+
 </body>
 </html>
+
