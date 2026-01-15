@@ -15,6 +15,11 @@
       color: #003366;
     }
 
+    h2 {
+      color: #003366;
+      margin-top: 30px;
+    }
+
     .actividad {
       background: #ffffff;
       border-left: 5px solid #0066cc;
@@ -49,11 +54,43 @@
       padding: 15px;
       border-left: 5px solid #ffc107;
     }
+
+    /* --- filtros --- */
+    .filtros {
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .filtros select,
+    .filtros input {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+
+    .filtros button {
+      padding: 6px 12px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
 
+  <!-- 🔎 FILTROS -->
+  <h2>🔎 Filtrar actividades</h2>
+
+  <div id="filtros-cti" class="filtros">
+    <!-- el contenido lo genera script.js -->
+  </div>
+
+  <!-- 📅 RESULTADOS DEL FILTRO -->
+  <div id="resultados-filtro"></div>
+
+  <!-- 📌 AGENDA SEMANAL (NO SE TOCA) -->
   <h1>Agenda CTI – Actividades de esta semana</h1>
 
   <div id="agenda" class="loading">
@@ -64,4 +101,3 @@
 
 </body>
 </html>
-
