@@ -1,0 +1,85 @@
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Fondo solo para demo */
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f2f4f7;
+    font-family: Arial, sans-serif;
+}
+
+/* Quita estilos de enlace */
+.card-link {
+    text-decoration: none;
+}
+
+/* Contenedor principal */
+.flip-card {
+    width: 220px;
+    height: 220px;
+    perspective: 1000px;
+    cursor: pointer;
+}
+
+/* Parte interna que gira */
+.flip-card-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.7s ease;
+    transform-style: preserve-3d;
+}
+
+/* Efecto hover */
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Caras */
+.flip-card-front,
+.flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    backface-visibility: hidden;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: flex-end;
+}
+
+/* Imagen frontal */
+.flip-card-front {
+    background-image: url("assets/front.jpg");
+}
+
+/* Imagen posterior */
+.flip-card-back {
+    background-image: url("assets/back.jpg");
+    transform: rotateY(180deg);
+}
+
+/* Capa oscura para legibilidad del texto */
+.overlay {
+    width: 100%;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    text-align: center;
+    border-radius: 0 0 14px 14px;
+}
+
+/* Texto */
+.overlay h3,
+.overlay p {
+    font-size: 16px;
+    font-weight: bold;
+}
