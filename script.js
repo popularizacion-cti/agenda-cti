@@ -1,21 +1,10 @@
 const ENDPOINT = "/.netlify/functions/get-activities";
 
-// ---- helper: convierte dd/mm/yyyy → Date ----
+// ---- helper: dd/mm/yyyy → Date ----
 function parseFecha(fechaStr) {
-  const [dd, mm, yyyy] = fechaStr.split("/");
+  if (!fechaStr) return null;
+  const [dd, mm, yyyy] = fechaStr.trim().split("/");
   return new Date(Number(yyyy), Number(mm) - 1, Number(dd));
-}
-
-// ---- obtener inicio y fin de esta semana ----
-function getRangoSemana() {
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
-
-  const finSemana = new Date(hoy);
-  finSemana.setDate(hoy.getDate() + (7 - hoy.getDay())); // domingo
-  finSemana.setHours(23, 59, 59, 999);
-
-  return { hoy, finSemana };
 }
 
 fetch(ENDPOINT)
@@ -32,13 +21,19 @@ fetch(ENDPOINT)
       return obj;
     });
 
-    const { hoy, finSemana } = getRangoSemana();
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
+    const fin = new Date(hoy);
+    fin.setDate(hoy.getDate() + 7);
 
     const filteredActivities = activities.filter(act => {
       if (act["APROBADO"] !== "SI") return false;
 
       const fechaActividad = parseFecha(act["FECHA"]);
-      return fechaActividad >= hoy && fechaActividad <= finSemana;
+      if (!fechaActividad) return false;
+
+      return fechaActividad >= hoy && fechaActividad <= fin;
     });
 
     renderActivities(filteredActivities);
@@ -54,7 +49,8 @@ function renderActivities(activities) {
   container.innerHTML = "";
 
   if (activities.length === 0) {
-    container.innerHTML = "<p>No hay actividades programadas esta semana.</p>";
+    container.innerHTML =
+      "<p>No hay actividades programadas en los próximos 7 días.</p>";
     return;
   }
 
