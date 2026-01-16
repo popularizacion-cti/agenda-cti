@@ -8,16 +8,9 @@ let ALL_ACTIVITIES = [];
 fetch(ENDPOINT)
   .then(res => res.json())
   .then(data => {
-    const headers = data[0];
-    const rows = data.slice(1);
 
-    ALL_ACTIVITIES = rows.map(row => {
-      let obj = {};
-      headers.forEach((h, i) => {
-        obj[h] = row[i] || "";
-      });
-      return obj;
-    }).filter(act => act["APROBADO"] === "SI");
+    // data ya es array de objetos
+    ALL_ACTIVITIES = data.filter(act => act["APROBADO"] === "SI");
 
     renderWeeklyAgenda(ALL_ACTIVITIES);
     buildFilters(ALL_ACTIVITIES);
@@ -43,10 +36,9 @@ function renderWeeklyAgenda(activities) {
   endOfWeek.setHours(23, 59, 59, 999);
 
   const weeklyActivities = activities.filter(act => {
-    const fechaStr = act["FECHA"];
-    if (!fechaStr) return false;
+    if (!act["FECHA"]) return false;
 
-    const [d, m, y] = fechaStr.split("/").map(Number);
+    const [d, m, y] = act["FECHA"].split("/").map(Number);
     const fecha = new Date(y, m - 1, d);
 
     return fecha >= today && fecha <= endOfWeek;
@@ -140,7 +132,9 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  document.getElementById("filtros-cti").querySelectorAll("select, input")
+  document
+    .getElementById("filtros-cti")
+    .querySelectorAll("select, input")
     .forEach(el => el.value = "");
 
   document.getElementById("resultados-filtro").innerHTML = "";
