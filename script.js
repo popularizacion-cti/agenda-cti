@@ -1,4 +1,4 @@
-const ENDPOINT = "/.netlify/functions/get-activities";
+const ENDPOINT = "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgsulD9_FCTr9PvlGiPakHQXybbgLXGIsm7bdn7aOIsrVg9qiw/exec";
 
 let ALL_ACTIVITIES = [];
 
