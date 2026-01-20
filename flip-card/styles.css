@@ -1,34 +1,59 @@
-/* Reset básico */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-/* Fondo solo para demo */
 body {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     background-color: #f2f4f7;
     font-family: Arial, sans-serif;
 }
 
-/* Quita estilos de enlace */
+/* CONTENEDOR GENERAL (controla ancho para Google Sites) */
+.grid-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 16px;
+}
+
+/* LINKS */
 .card-link {
     text-decoration: none;
 }
 
-/* Contenedor principal */
+/* TAMAÑOS DE TARJETAS */
+.card-wide {
+    grid-column: span 12;
+}
+
+.card-medium {
+    grid-column: span 7;
+}
+
+.card-small {
+    grid-column: span 5;
+}
+
+.card-square {
+    grid-column: span 3;
+}
+
+/* FLIP CARD BASE */
 .flip-card {
-    width: 220px;
+    width: 100%;
     height: 220px;
     perspective: 1000px;
     cursor: pointer;
 }
 
-/* Parte interna que gira */
+.card-square .flip-card {
+    height: 180px;
+}
+
+/* ANIMACIÓN */
 .flip-card-inner {
     width: 100%;
     height: 100%;
@@ -37,12 +62,11 @@ body {
     transform-style: preserve-3d;
 }
 
-/* Efecto hover */
 .flip-card:hover .flip-card-inner {
     transform: rotateY(180deg);
 }
 
-/* Caras */
+/* CARAS */
 .flip-card-front,
 .flip-card-back {
     position: absolute;
@@ -56,30 +80,34 @@ body {
     align-items: flex-end;
 }
 
-/* Imagen frontal */
 .flip-card-front {
     background-image: url("assets/front.jpg");
 }
 
-/* Imagen posterior */
 .flip-card-back {
     background-image: url("assets/back.jpg");
     transform: rotateY(180deg);
 }
 
-/* Capa oscura para legibilidad del texto */
+/* OVERLAY */
 .overlay {
     width: 100%;
     padding: 12px;
     background: rgba(0, 0, 0, 0.55);
-    color: #ffffff;
+    color: white;
     text-align: center;
     border-radius: 0 0 14px 14px;
+    font-weight: bold;
 }
 
-/* Texto */
-.overlay h3,
-.overlay p {
-    font-size: 16px;
-    font-weight: bold;
+/* RESPONSIVE */
+@media (max-width: 900px) {
+    .card-medium,
+    .card-small {
+        grid-column: span 12;
+    }
+
+    .card-square {
+        grid-column: span 6;
+    }
 }
