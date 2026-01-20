@@ -3,13 +3,43 @@ const ENDPOINT = "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgs
 let ALL_ACTIVITIES = [];
 
 /* =======================
+   UTILIDADES FECHA / HORA
+======================= */
+function parseDate(value) {
+  if (!value) return null;
+
+  if (value instanceof Date) {
+    return new Date(value);
+  }
+
+  if (typeof value === "string" && value.includes("/")) {
+    const [d, m, y] = value.split("/").map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  return new Date(value);
+}
+
+function formatDate(date) {
+  if (!date) return "";
+  return date.toLocaleDateString("es-PE");
+}
+
+function formatTime(value) {
+  if (!value) return "";
+  const date = value instanceof Date ? value : new Date(value);
+  return date.toLocaleTimeString("es-PE", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/* =======================
    FETCH DATA
 ======================= */
 fetch(ENDPOINT)
   .then(res => res.json())
   .then(data => {
-
-    // data ya es array de objetos
     ALL_ACTIVITIES = data.filter(act => act["APROBADO"] === "SI");
 
     renderWeeklyAgenda(ALL_ACTIVITIES);
@@ -36,10 +66,8 @@ function renderWeeklyAgenda(activities) {
   endOfWeek.setHours(23, 59, 59, 999);
 
   const weeklyActivities = activities.filter(act => {
-    if (!act["FECHA"]) return false;
-
-    const [d, m, y] = act["FECHA"].split("/").map(Number);
-    const fecha = new Date(y, m - 1, d);
+    const fecha = parseDate(act["FECHA"]);
+    if (!fecha) return false;
 
     return fecha >= today && fecha <= endOfWeek;
   });
@@ -88,14 +116,14 @@ function buildFilters(activities) {
       ${unique("MODALIDAD").map(v => `<option>${v}</option>`).join("")}
     </select>
 
-    <br>
+    <br><br>
 
     Desde:
     <input type="date" id="f-desde">
     Hasta:
     <input type="date" id="f-hasta">
 
-    <br>
+    <br><br>
 
     <button onclick="applyFilters()">Filtrar</button>
     <button onclick="clearFilters()">Limpiar</button>
@@ -110,7 +138,7 @@ function applyFilters() {
   const desde = document.getElementById("f-desde").value;
   const hasta = document.getElementById("f-hasta").value;
 
-  let results = ALL_ACTIVITIES.filter(act => {
+  const results = ALL_ACTIVITIES.filter(act => {
 
     if (tipoInst && act["TIPO INSTITUCION"] !== tipoInst) return false;
     if (region && act["REGION"] !== region) return false;
@@ -118,8 +146,8 @@ function applyFilters() {
     if (modalidad && act["MODALIDAD"] !== modalidad) return false;
 
     if (desde || hasta) {
-      const [d, m, y] = act["FECHA"].split("/").map(Number);
-      const fecha = new Date(y, m - 1, d);
+      const fecha = parseDate(act["FECHA"]);
+      if (!fecha) return false;
 
       if (desde && fecha < new Date(desde)) return false;
       if (hasta && fecha > new Date(hasta)) return false;
@@ -168,17 +196,28 @@ function buildActivityCard(act) {
   const div = document.createElement("div");
   div.className = "actividad";
 
+  const fecha = parseDate(act["FECHA"]);
+
   div.innerHTML = `
-    <div class="fecha">${act["FECHA"]} – ${act["HORA"]}</div>
+    <div class="fecha">
+      ${formatDate(fecha)} – ${formatTime(act["HORA"])}
+    </div>
+
     <h3>${act["NOMBRE DE LA ACTIVIDAD"]}</h3>
+
     <div class="institucion">
       ${act["INSTITUCION"]} · ${act["REGION"]}
     </div>
+
     <p>${act["RESUMEN"]}</p>
+
     <div class="modalidad">
       <strong>Modalidad:</strong> ${act["MODALIDAD"]}
     </div>
-    <a href="${act["LUGAR / LINK"]}" target="_blank">Ver evento</a>
+
+    <a href="${act["LUGAR / LINK"]}" target="_blank">
+      Ver evento
+    </a>
   `;
 
   return div;
