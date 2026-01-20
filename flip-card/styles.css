@@ -111,3 +111,26 @@ body {
         grid-column: span 6;
     }
 }
+
+/* ===============================
+   🎛 CONTROLES DE ALTURA (PRUEBAS)
+   =============================== */
+
+/* Rectángulo ancho (fila 1) */
+.card-wide .flip-card {
+    height: 300px;   /* 🔼 prueba: 260 / 300 / 340 */
+}
+
+/* Rectángulos medianos (fila 2 y 3) */
+.card-medium .flip-card {
+    height: 260px;   /* 🔼 prueba: 240 / 260 / 280 */
+}
+
+.card-small .flip-card {
+    height: 260px;   /* mantenlos iguales para balance */
+}
+
+/* Cuadrados (fila 4) */
+.card-square .flip-card {
+    height: 200px;   /* 🔼 prueba: 180 / 200 / 220 */
+}
