@@ -81,11 +81,11 @@ body {
 }
 
 .flip-card-front {
-    background-image: url("assets/front.jpg");
+    background-image: var(--front-img, url("assets/front.jpg"));
 }
 
 .flip-card-back {
-    background-image: url("assets/back.jpg");
+    background-image: var(--back-img, url("assets/back.jpg"));
     transform: rotateY(180deg);
 }
 
