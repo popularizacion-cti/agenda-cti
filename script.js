@@ -3,12 +3,39 @@ const ENDPOINT = "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgs
 let ALL_ACTIVITIES = [];
 
 /* =======================
-   UTILIDADES FECHA / HORA (TEXTO)
+   FECHAS (NORMALIZACIÓN)
 ======================= */
-function formatFechaTexto(value) {
-  return value ? value : "";
+
+// Convierte cualquier formato a Date válido
+function parseFecha(value) {
+  if (!value) return null;
+
+  // ISO (2026-01-05T05:00:00.000Z)
+  if (typeof value === "string" && value.includes("T")) {
+    const d = new Date(value);
+    return isNaN(d) ? null : d;
+  }
+
+  // DD/MM/YYYY
+  if (typeof value === "string" && value.includes("/")) {
+    const [d, m, y] = value.split("/").map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  const d = new Date(value);
+  return isNaN(d) ? null : d;
 }
 
+// Muestra SIEMPRE DD/MM/YYYY
+function formatFecha(date) {
+  if (!date) return "";
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+}
+
+// Hora solo como texto
 function formatHoraTexto(value) {
   return value ? value : "";
 }
@@ -19,9 +46,13 @@ function formatHoraTexto(value) {
 fetch(ENDPOINT)
   .then(res => res.json())
   .then(data => {
-    ALL_ACTIVITIES = data.filter(
-      act => act["Aprobado"] === "SI" || act["Aprobado"] === "Si"
-    );
+    // precalcular fecha normalizada
+    ALL_ACTIVITIES = data
+      .filter(act => act["Aprobado"] === "SI" || act["Aprobado"] === "Si")
+      .map(act => ({
+        ...act,
+        _fechaObj: parseFecha(act["Fecha de realización"])
+      }));
 
     renderWeeklyAgenda(ALL_ACTIVITIES);
     buildFilters(ALL_ACTIVITIES);
@@ -46,16 +77,13 @@ function renderWeeklyAgenda(activities) {
   endOfWeek.setHours(23, 59, 59, 999);
 
   const weekly = activities.filter(act => {
-    const fecha = act["Fecha de realización"];
-    if (!fecha || !fecha.includes("/")) return false;
-
-    const [d, m, y] = fecha.split("/").map(Number);
-    const dateObj = new Date(y, m - 1, d);
-    return dateObj >= today && dateObj <= endOfWeek;
+    const f = act._fechaObj;
+    return f && f >= today && f <= endOfWeek;
   });
 
   if (weekly.length === 0) {
-    container.innerHTML = `<div class="sin-actividades">No hay actividades esta semana.</div>`;
+    container.innerHTML =
+      `<div class="sin-actividades">No hay actividades esta semana.</div>`;
     return;
   }
 
@@ -63,7 +91,7 @@ function renderWeeklyAgenda(activities) {
 }
 
 /* =======================
-   FILTROS (SIN PÚBLICO)
+   FILTROS
 ======================= */
 function buildFilters(activities) {
   const filtrosDiv = document.getElementById("filtros-cti");
@@ -100,18 +128,18 @@ function applyFilters() {
   const desde = document.getElementById("f-desde").value;
   const hasta = document.getElementById("f-hasta").value;
 
+  const desdeDate = desde ? new Date(desde) : null;
+  const hastaDate = hasta ? new Date(hasta) : null;
+
   const results = ALL_ACTIVITIES.filter(act => {
     if (region && act["Región"] !== region) return false;
     if (modalidad && act["Modalidad"] !== modalidad) return false;
 
-    if (desde || hasta) {
-      if (!act["Fecha de realización"]) return false;
-      const [d, m, y] = act["Fecha de realización"].split("/").map(Number);
-      const fecha = new Date(y, m - 1, d);
+    const f = act._fechaObj;
+    if (!f) return false;
 
-      if (desde && fecha < new Date(desde)) return false;
-      if (hasta && fecha > new Date(hasta)) return false;
-    }
+    if (desdeDate && f < desdeDate) return false;
+    if (hastaDate && f > hastaDate) return false;
 
     return true;
   });
@@ -134,7 +162,8 @@ function renderFilterResults(activities) {
   container.innerHTML = "<h2>📋 Resultados del filtro</h2>";
 
   if (activities.length === 0) {
-    container.innerHTML += `<div class="sin-actividades">No se encontraron actividades.</div>`;
+    container.innerHTML +=
+      `<div class="sin-actividades">No se encontraron actividades.</div>`;
     return;
   }
 
@@ -183,7 +212,7 @@ function buildActivityCard(act) {
       </div>`;
   }
 
-  const fechaTexto = formatFechaTexto(act["Fecha de realización"]);
+  const fechaTexto = formatFecha(act._fechaObj);
   const horaTexto = formatHoraTexto(act["Hora de realización"]);
 
   div.innerHTML = `
