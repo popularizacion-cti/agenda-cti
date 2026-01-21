@@ -7,17 +7,19 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 20px;
       background: #f8f9fa;
+      margin: 0;
     }
 
-    h1 {
-      color: #003366;
+    /* CONTENEDOR PRINCIPAL PARA GOOGLE SITES */
+    .main-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
     }
 
-    h2 {
+    h1, h2 {
       color: #003366;
-      margin-top: 30px;
     }
 
     .actividad {
@@ -26,22 +28,19 @@
       padding: 15px;
       margin-bottom: 15px;
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      word-break: break-word;
     }
 
     .fecha {
       font-weight: bold;
       color: #0066cc;
+      margin-bottom: 5px;
     }
 
     .institucion {
       font-size: 0.9em;
       color: #555;
-    }
-
-    .modalidad {
-      font-size: 0.85em;
-      color: #333;
-      margin-top: 5px;
+      margin-bottom: 8px;
     }
 
     .loading {
@@ -75,26 +74,30 @@
       margin-right: 5px;
       cursor: pointer;
     }
+
+    a {
+      word-break: break-all;
+    }
   </style>
 </head>
 
 <body>
 
-  <!-- 🔎 FILTROS -->
-  <h2>🔎 Filtrar actividades</h2>
+  <div class="main-container">
 
-  <div id="filtros-cti" class="filtros">
-    <!-- el contenido lo genera script.js -->
-  </div>
+    <!-- 🔎 FILTROS -->
+    <h2>🔎 Filtrar actividades</h2>
+    <div id="filtros-cti" class="filtros"></div>
 
-  <!-- 📅 RESULTADOS DEL FILTRO -->
-  <div id="resultados-filtro"></div>
+    <!-- 📅 RESULTADOS DEL FILTRO -->
+    <div id="resultados-filtro"></div>
 
-  <!-- 📌 AGENDA SEMANAL (NO SE TOCA) -->
-  <h1>Agenda CTI – Actividades de esta semana</h1>
+    <!-- 📌 AGENDA SEMANAL -->
+    <h1>Agenda CTI – Actividades de esta semana</h1>
+    <div id="agenda" class="loading">
+      Cargando actividades…
+    </div>
 
-  <div id="agenda" class="loading">
-    Cargando actividades…
   </div>
 
   <script src="script.js"></script>
