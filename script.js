@@ -8,9 +8,7 @@ let ALL_ACTIVITIES = [];
 function parseDate(value) {
   if (!value) return null;
 
-  if (value instanceof Date) {
-    return new Date(value);
-  }
+  if (value instanceof Date) return new Date(value);
 
   if (typeof value === "string" && value.includes("/")) {
     const [d, m, y] = value.split("/").map(Number);
@@ -40,7 +38,9 @@ function formatTime(value) {
 fetch(ENDPOINT)
   .then(res => res.json())
   .then(data => {
-    ALL_ACTIVITIES = data.filter(act => act["APROBADO"] === "SI");
+    ALL_ACTIVITIES = data.filter(
+      act => act["Aprobado"] === "SI" || act["Aprobado"] === "Si"
+    );
 
     renderWeeklyAgenda(ALL_ACTIVITIES);
     buildFilters(ALL_ACTIVITIES);
@@ -62,14 +62,12 @@ function renderWeeklyAgenda(activities) {
   today.setHours(0, 0, 0, 0);
 
   const endOfWeek = new Date(today);
-  endOfWeek.setDate(today.getDate() + (7 - today.getDay()));
+  endOfWeek.setDate(today.getDate() + 7);
   endOfWeek.setHours(23, 59, 59, 999);
 
   const weeklyActivities = activities.filter(act => {
-    const fecha = parseDate(act["FECHA"]);
-    if (!fecha) return false;
-
-    return fecha >= today && fecha <= endOfWeek;
+    const fecha = parseDate(act["Fecha de realización"]);
+    return fecha && fecha >= today && fecha <= endOfWeek;
   });
 
   if (weeklyActivities.length === 0) {
@@ -92,28 +90,28 @@ function renderWeeklyAgenda(activities) {
 function buildFilters(activities) {
   const filtrosDiv = document.getElementById("filtros-cti");
 
-  const unique = (key) =>
+  const unique = key =>
     [...new Set(activities.map(a => a[key]).filter(v => v))].sort();
 
   filtrosDiv.innerHTML = `
-    <select id="f-tipo-inst">
-      <option value="">Tipo institución</option>
-      ${unique("TIPO INSTITUCION").map(v => `<option>${v}</option>`).join("")}
+    <select id="f-tipo-entidad">
+      <option value="">Tipo de entidad</option>
+      ${unique("Tipo de entidad").map(v => `<option>${v}</option>`).join("")}
     </select>
 
     <select id="f-region">
       <option value="">Región</option>
-      ${unique("REGION").map(v => `<option>${v}</option>`).join("")}
-    </select>
-
-    <select id="f-tipo-act">
-      <option value="">Tipo actividad</option>
-      ${unique("TIPO ACTIVIDAD").map(v => `<option>${v}</option>`).join("")}
+      ${unique("Región").map(v => `<option>${v}</option>`).join("")}
     </select>
 
     <select id="f-modalidad">
       <option value="">Modalidad</option>
-      ${unique("MODALIDAD").map(v => `<option>${v}</option>`).join("")}
+      ${unique("Modalidad").map(v => `<option>${v}</option>`).join("")}
+    </select>
+
+    <select id="f-publico">
+      <option value="">Público objetivo</option>
+      ${unique("Público objetivo").map(v => `<option>${v}</option>`).join("")}
     </select>
 
     <br><br>
@@ -131,24 +129,22 @@ function buildFilters(activities) {
 }
 
 function applyFilters() {
-  const tipoInst = document.getElementById("f-tipo-inst").value;
+  const tipoEntidad = document.getElementById("f-tipo-entidad").value;
   const region = document.getElementById("f-region").value;
-  const tipoAct = document.getElementById("f-tipo-act").value;
   const modalidad = document.getElementById("f-modalidad").value;
+  const publico = document.getElementById("f-publico").value;
   const desde = document.getElementById("f-desde").value;
   const hasta = document.getElementById("f-hasta").value;
 
   const results = ALL_ACTIVITIES.filter(act => {
-
-    if (tipoInst && act["TIPO INSTITUCION"] !== tipoInst) return false;
-    if (region && act["REGION"] !== region) return false;
-    if (tipoAct && act["TIPO ACTIVIDAD"] !== tipoAct) return false;
-    if (modalidad && act["MODALIDAD"] !== modalidad) return false;
+    if (tipoEntidad && act["Tipo de entidad"] !== tipoEntidad) return false;
+    if (region && act["Región"] !== region) return false;
+    if (modalidad && act["Modalidad"] !== modalidad) return false;
+    if (publico && act["Público objetivo"] !== publico) return false;
 
     if (desde || hasta) {
-      const fecha = parseDate(act["FECHA"]);
+      const fecha = parseDate(act["Fecha de realización"]);
       if (!fecha) return false;
-
       if (desde && fecha < new Date(desde)) return false;
       if (hasta && fecha > new Date(hasta)) return false;
     }
@@ -163,7 +159,7 @@ function clearFilters() {
   document
     .getElementById("filtros-cti")
     .querySelectorAll("select, input")
-    .forEach(el => el.value = "");
+    .forEach(el => (el.value = ""));
 
   document.getElementById("resultados-filtro").innerHTML = "";
 }
@@ -196,28 +192,51 @@ function buildActivityCard(act) {
   const div = document.createElement("div");
   div.className = "actividad";
 
-  const fecha = parseDate(act["FECHA"]);
+  const fecha = parseDate(act["Fecha de realización"]);
+
+  let extraInfo = "";
+
+  if (act["Modalidad"] && act["Modalidad"] !== "Virtual") {
+    extraInfo += `<div><strong>Lugar del evento:</strong> ${act["Lugar del evento"]}</div>`;
+  }
+
+  if (act["Modalidad"] && act["Modalidad"] !== "Física Presencial") {
+    extraInfo += `<div><strong>Enlace del evento:</strong> <a href="${act["Enlace del evento"]}" target="_blank">Acceder</a></div>`;
+  }
+
+  if (act["¿El evento necesita inscripción previa?"] === "Si") {
+    extraInfo += `<div><strong>Inscripción:</strong> <a href="${act["Enlace a inscripción (solo si se necesita)"]}" target="_blank">Formulario</a></div>`;
+  }
 
   div.innerHTML = `
     <div class="fecha">
-      ${formatDate(fecha)} – ${formatTime(act["HORA"])}
+      ${formatDate(fecha)} – ${formatTime(act["Hora de realización"])}
     </div>
 
-    <h3>${act["NOMBRE DE LA ACTIVIDAD"]}</h3>
+    <h3>${act["Nombre de la actividad"]}</h3>
 
     <div class="institucion">
-      ${act["INSTITUCION"]} · ${act["REGION"]}
+      ${act["Nombre de la entidad que organiza"]} · ${act["Región"]}
     </div>
 
-    <p>${act["RESUMEN"]}</p>
+    <p>${act["Resumen de la actividad"]}</p>
 
-    <div class="modalidad">
-      <strong>Modalidad:</strong> ${act["MODALIDAD"]}
+    <div><strong>Público objetivo:</strong> ${act["Público objetivo"]}</div>
+    <div><strong>Modalidad:</strong> ${act["Modalidad"]}</div>
+
+    ${extraInfo}
+
+    <div>
+      <strong>Mayor información:</strong>
+      <a href="${act["Enlace para más información"]}" target="_blank">Ver</a>
     </div>
 
-    <a href="${act["LUGAR / LINK"]}" target="_blank">
-      Ver evento
-    </a>
+    <div><strong>Información adicional:</strong> ${act["Información adicional que se debe detallar en la AGENDA"]}</div>
+
+    <div>
+      <strong>Contacto:</strong>
+      ${act["Nombres y Apellidos"]} – ${act["Correo electrónico"]}
+    </div>
   `;
 
   return div;
