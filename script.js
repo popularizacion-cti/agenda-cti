@@ -3,28 +3,14 @@ const ENDPOINT = "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgs
 let ALL_ACTIVITIES = [];
 
 /* =======================
-   FECHA / HORA
+   UTILIDADES FECHA / HORA (TEXTO)
 ======================= */
-function parseDate(value) {
-  if (!value) return null;
-  const date = value instanceof Date ? value : new Date(value);
-  return isNaN(date) ? null : date;
+function formatFechaTexto(value) {
+  return value ? value : "";
 }
 
-function formatDate(date) {
-  if (!date) return "";
-  return date.toLocaleDateString("es-PE");
-}
-
-function formatTime(value) {
-  if (!value) return "";
-  const date = value instanceof Date ? value : new Date(value);
-  if (isNaN(date)) return "";
-  return date.toLocaleTimeString("es-PE", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true
-  });
+function formatHoraTexto(value) {
+  return value ? value : "";
 }
 
 /* =======================
@@ -60,8 +46,12 @@ function renderWeeklyAgenda(activities) {
   endOfWeek.setHours(23, 59, 59, 999);
 
   const weekly = activities.filter(act => {
-    const fecha = parseDate(act["Fecha de realización"]);
-    return fecha && fecha >= today && fecha <= endOfWeek;
+    const fecha = act["Fecha de realización"];
+    if (!fecha || !fecha.includes("/")) return false;
+
+    const [d, m, y] = fecha.split("/").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    return dateObj >= today && dateObj <= endOfWeek;
   });
 
   if (weekly.length === 0) {
@@ -115,8 +105,10 @@ function applyFilters() {
     if (modalidad && act["Modalidad"] !== modalidad) return false;
 
     if (desde || hasta) {
-      const fecha = parseDate(act["Fecha de realización"]);
-      if (!fecha) return false;
+      if (!act["Fecha de realización"]) return false;
+      const [d, m, y] = act["Fecha de realización"].split("/").map(Number);
+      const fecha = new Date(y, m - 1, d);
+
       if (desde && fecha < new Date(desde)) return false;
       if (hasta && fecha > new Date(hasta)) return false;
     }
@@ -128,8 +120,9 @@ function applyFilters() {
 }
 
 function clearFilters() {
-  document.querySelectorAll("#filtros-cti select, #filtros-cti input")
-    .forEach(el => el.value = "");
+  document
+    .querySelectorAll("#filtros-cti select, #filtros-cti input")
+    .forEach(el => (el.value = ""));
   document.getElementById("resultados-filtro").innerHTML = "";
 }
 
@@ -155,8 +148,6 @@ function buildActivityCard(act) {
   const div = document.createElement("div");
   div.className = "actividad";
 
-  const fecha = parseDate(act["Fecha de realización"]);
-
   let extra = "";
 
   if (act["Lugar del evento"]) {
@@ -181,9 +172,23 @@ function buildActivityCard(act) {
       </div>`;
   }
 
+  let infoAdicional = "";
+  if (
+    act["Información adicional que se debe detallar en la AGENDA"] &&
+    act["Información adicional que se debe detallar en la AGENDA"].trim() !== ""
+  ) {
+    infoAdicional = `
+      <div><strong>Información adicional:</strong>
+        ${act["Información adicional que se debe detallar en la AGENDA"]}
+      </div>`;
+  }
+
+  const fechaTexto = formatFechaTexto(act["Fecha de realización"]);
+  const horaTexto = formatHoraTexto(act["Hora de realización"]);
+
   div.innerHTML = `
     <div class="fecha">
-      ${formatDate(fecha)} – ${formatTime(act["Hora de realización"])}
+      ${fechaTexto}${horaTexto ? " – " + horaTexto : ""}
     </div>
 
     <h3>${act["Nombre de la actividad"]}</h3>
@@ -204,9 +209,7 @@ function buildActivityCard(act) {
       </a>
     </div>
 
-    <div><strong>Información adicional:</strong>
-      ${act["Información adicional que se debe detallar en la AGENDA"]}
-    </div>
+    ${infoAdicional}
 
     <div><strong>Contacto:</strong>
       ${act["Nombres y Apellidos"]} – ${act["Correo electrónico"]}
