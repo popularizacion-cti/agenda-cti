@@ -5,14 +5,18 @@ let ALL_ACTIVITIES = [];
 /* =======================
    FECHAS (NORMALIZACIÓN)
 ======================= */
+
+// Convierte cualquier formato a Date válido
 function parseFecha(value) {
   if (!value) return null;
 
+  // ISO (2026-01-05T05:00:00.000Z)
   if (typeof value === "string" && value.includes("T")) {
     const d = new Date(value);
     return isNaN(d) ? null : d;
   }
 
+  // DD/MM/YYYY
   if (typeof value === "string" && value.includes("/")) {
     const [d, m, y] = value.split("/").map(Number);
     return new Date(y, m - 1, d);
@@ -22,6 +26,7 @@ function parseFecha(value) {
   return isNaN(d) ? null : d;
 }
 
+// Muestra SIEMPRE DD/MM/YYYY
 function formatFecha(date) {
   if (!date) return "";
   const d = String(date.getDate()).padStart(2, "0");
@@ -30,6 +35,7 @@ function formatFecha(date) {
   return `${d}/${m}/${y}`;
 }
 
+// Hora solo como texto
 function formatHoraTexto(value) {
   return value ? value : "";
 }
@@ -40,6 +46,7 @@ function formatHoraTexto(value) {
 fetch(ENDPOINT)
   .then(res => res.json())
   .then(data => {
+    // precalcular fecha normalizada
     ALL_ACTIVITIES = data
       .filter(act => act["Aprobado"] === "SI" || act["Aprobado"] === "Si")
       .map(act => ({
@@ -56,10 +63,10 @@ fetch(ENDPOINT)
   });
 
 /* =======================
-   AGENDA SEMANAL (MISMO FORMATO QUE FILTROS)
+   AGENDA SEMANAL
 ======================= */
 function renderWeeklyAgenda(activities) {
-  const container = document.getElementById("resultados-filtro");
+  const container = document.getElementById("agenda");
   container.innerHTML = "";
 
   const today = new Date();
