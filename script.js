@@ -59,8 +59,8 @@ fetch(ENDPOINT)
    AGENDA SEMANAL (MISMO FORMATO QUE FILTROS)
 ======================= */
 function renderWeeklyAgenda(activities) {
-  const container = document.getElementById("agenda");
-  container.innerHTML = "<h2>📅 Actividades de esta semana</h2>";
+  const container = document.getElementById("resultados-filtro");
+  container.innerHTML = "";
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -75,7 +75,7 @@ function renderWeeklyAgenda(activities) {
   });
 
   if (weekly.length === 0) {
-    container.innerHTML +=
+    container.innerHTML =
       `<div class="sin-actividades">No hay actividades esta semana.</div>`;
     return;
   }
