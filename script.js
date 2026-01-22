@@ -46,7 +46,6 @@ function formatHoraTexto(value) {
 fetch(ENDPOINT)
   .then(res => res.json())
   .then(data => {
-    // precalcular fecha normalizada
     ALL_ACTIVITIES = data
       .filter(act => act["Aprobado"] === "SI" || act["Aprobado"] === "Si")
       .map(act => ({
@@ -76,10 +75,12 @@ function renderWeeklyAgenda(activities) {
   endOfWeek.setDate(today.getDate() + 7);
   endOfWeek.setHours(23, 59, 59, 999);
 
-  const weekly = activities.filter(act => {
-    const f = act._fechaObj;
-    return f && f >= today && f <= endOfWeek;
-  });
+  const weekly = activities
+    .filter(act => {
+      const f = act._fechaObj;
+      return f && f >= today && f <= endOfWeek;
+    })
+    .sort((a, b) => a._fechaObj - b._fechaObj);
 
   if (weekly.length === 0) {
     container.innerHTML =
@@ -143,6 +144,9 @@ function applyFilters() {
 
     return true;
   });
+
+  // 🔹 ORDEN POR FECHA
+  results.sort((a, b) => a._fechaObj - b._fechaObj);
 
   renderFilterResults(results);
 }
