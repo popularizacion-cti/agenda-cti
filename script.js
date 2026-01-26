@@ -7,8 +7,8 @@ let ALL_ACTIVITIES = [];
    FECHAS
 ======================= */
 
-// Para filtros (Date real)
-function parseFechaDMY(valor) {
+// SOLO para filtros
+function parseFechaFiltro(valor) {
   if (!valor) return null;
 
   if (typeof valor === "string" && valor.includes("/")) {
@@ -20,29 +20,48 @@ function parseFechaDMY(valor) {
   return isNaN(f) ? null : f;
 }
 
-// Para mostrar (SIEMPRE dd/mm/yyyy)
-function formatearFechaDMY(valor) {
+// SOLO para mostrar (NO tocar)
+function mostrarFecha(valor) {
   if (!valor) return "";
-
-  if (typeof valor === "string" && valor.includes("/")) {
-    return valor;
-  }
+  if (typeof valor === "string" && valor.includes("/")) return valor;
 
   const d = new Date(valor);
   if (isNaN(d)) return "";
 
-  const dia = String(d.getDate()).padStart(2, "0");
-  const mes = String(d.getMonth() + 1).padStart(2, "0");
-  const anio = d.getFullYear();
-
-  return `${dia}/${mes}/${anio}`;
+  return `${String(d.getDate()).padStart(2, "0")}/${String(
+    d.getMonth() + 1
+  ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
-// Hora SOLO como texto
-function formatearHora(inicio, fin) {
-  if (!inicio && !fin) return "";
-  if (inicio && fin) return `${inicio} - ${fin}`;
-  return inicio || fin;
+/* =======================
+   HORAS (CLAVE)
+======================= */
+
+// Convierte ISO o texto → HH:MM
+function limpiarHora(valor) {
+  if (!valor) return "";
+
+  // Si viene como ISO (1899-12-30T21:08:36.000Z)
+  if (typeof valor === "string" && valor.includes("T")) {
+    const d = new Date(valor);
+    if (isNaN(d)) return "";
+    return d.toLocaleTimeString("es-PE", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false
+    });
+  }
+
+  // Si ya es texto HH:MM
+  return valor;
+}
+
+function mostrarHora(inicio, fin) {
+  const h1 = limpiarHora(inicio);
+  const h2 = limpiarHora(fin);
+
+  if (h1 && h2) return `${h1} - ${h2}`;
+  return h1 || h2 || "";
 }
 
 /* =======================
@@ -55,7 +74,7 @@ fetch(ENDPOINT)
       .filter(a => a["Aprobado"] === "Si" || a["Aprobado"] === "SI")
       .map(a => ({
         ...a,
-        _fechaObj: parseFechaDMY(a["Fecha de realización"]),
+        _fechaFiltro: parseFechaFiltro(a["Fecha de realización"]),
         _publicos: a["Público objetivo"]
           ? a["Público objetivo"].split(",").map(p => p.trim())
           : []
@@ -73,44 +92,41 @@ fetch(ENDPOINT)
 /* =======================
    AGENDA SEMANAL
 ======================= */
-function renderWeeklyAgenda(activities) {
-  const container = document.getElementById("agenda");
-  container.innerHTML = "";
+function renderWeeklyAgenda(list) {
+  const cont = document.getElementById("agenda");
+  cont.innerHTML = "";
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 
-  const finSemana = new Date(hoy);
-  finSemana.setDate(hoy.getDate() + 7);
-  finSemana.setHours(23, 59, 59, 999);
+  const fin = new Date(hoy);
+  fin.setDate(hoy.getDate() + 7);
+  fin.setHours(23, 59, 59, 999);
 
-  const semanal = activities
-    .filter(a => a._fechaObj && a._fechaObj >= hoy && a._fechaObj <= finSemana)
-    .sort((a, b) => a._fechaObj - b._fechaObj);
+  const semanal = list
+    .filter(a => a._fechaFiltro && a._fechaFiltro >= hoy && a._fechaFiltro <= fin)
+    .sort((a, b) => a._fechaFiltro - b._fechaFiltro);
 
-  if (semanal.length === 0) {
-    container.innerHTML =
+  if (!semanal.length) {
+    cont.innerHTML =
       `<div class="sin-actividades">No hay actividades esta semana.</div>`;
     return;
   }
 
-  semanal.forEach(a => container.appendChild(buildActivityCard(a)));
+  semanal.forEach(a => cont.appendChild(buildCard(a)));
 }
 
 /* =======================
    FILTROS
 ======================= */
-function buildFilters(activities) {
+function buildFilters(list) {
   const div = document.getElementById("filtros-cti");
 
-  const unique = arr =>
-    [...new Set(arr)].filter(v => v).sort();
+  const uniq = arr => [...new Set(arr)].filter(Boolean).sort();
 
-  const regiones = unique(activities.map(a => a["Región"]));
-  const modalidades = unique(activities.map(a => a["Modalidad"]));
-  const publicos = unique(
-    activities.flatMap(a => a._publicos)
-  );
+  const regiones = uniq(list.map(a => a["Región"]));
+  const modalidades = uniq(list.map(a => a["Modalidad"]));
+  const publicos = uniq(list.flatMap(a => a._publicos));
 
   div.innerHTML = `
     <select id="f-region">
@@ -128,41 +144,36 @@ function buildFilters(activities) {
       ${publicos.map(p => `<option>${p}</option>`).join("")}
     </select>
 
-    Desde:
-    <input type="date" id="f-desde">
-    Hasta:
-    <input type="date" id="f-hasta">
+    Desde: <input type="date" id="f-desde">
+    Hasta: <input type="date" id="f-hasta">
 
     <br><br>
-
     <button onclick="applyFilters()">Filtrar</button>
     <button onclick="clearFilters()">Limpiar</button>
   `;
 }
 
 function applyFilters() {
-  const region = document.getElementById("f-region").value;
-  const modalidad = document.getElementById("f-modalidad").value;
-  const publico = document.getElementById("f-publico").value;
-  const desde = document.getElementById("f-desde").value;
-  const hasta = document.getElementById("f-hasta").value;
+  const region = f("f-region");
+  const modalidad = f("f-modalidad");
+  const publico = f("f-publico");
+  const desde = f("f-desde");
+  const hasta = f("f-hasta");
 
-  const desdeD = desde ? new Date(desde) : null;
-  const hastaD = hasta ? new Date(hasta) : null;
+  const dDesde = desde ? new Date(desde) : null;
+  const dHasta = hasta ? new Date(hasta) : null;
 
-  const results = ALL_ACTIVITIES.filter(a => {
+  const res = ALL_ACTIVITIES.filter(a => {
     if (region && a["Región"] !== region) return false;
     if (modalidad && a["Modalidad"] !== modalidad) return false;
     if (publico && !a._publicos.includes(publico)) return false;
-
-    if (!a._fechaObj) return false;
-    if (desdeD && a._fechaObj < desdeD) return false;
-    if (hastaD && a._fechaObj > hastaD) return false;
-
+    if (!a._fechaFiltro) return false;
+    if (dDesde && a._fechaFiltro < dDesde) return false;
+    if (dHasta && a._fechaFiltro > dHasta) return false;
     return true;
-  }).sort((a, b) => a._fechaObj - b._fechaObj);
+  });
 
-  renderFilterResults(results);
+  renderFilterResults(res.sort((a, b) => a._fechaFiltro - b._fechaFiltro));
 }
 
 function clearFilters() {
@@ -172,6 +183,10 @@ function clearFilters() {
   document.getElementById("resultados-filtro").innerHTML = "";
 }
 
+function f(id) {
+  return document.getElementById(id).value;
+}
+
 /* =======================
    RESULTADOS
 ======================= */
@@ -179,29 +194,26 @@ function renderFilterResults(list) {
   const div = document.getElementById("resultados-filtro");
   div.innerHTML = "<h2>📋 Resultados del filtro</h2>";
 
-  if (list.length === 0) {
+  if (!list.length) {
     div.innerHTML +=
       `<div class="sin-actividades">No se encontraron actividades.</div>`;
     return;
   }
 
-  list.forEach(a => div.appendChild(buildActivityCard(a)));
+  list.forEach(a => div.appendChild(buildCard(a)));
 }
 
 /* =======================
    CARD
 ======================= */
-function buildActivityCard(a) {
+function buildCard(a) {
   const div = document.createElement("div");
   div.className = "actividad";
 
-  const fecha = formatearFechaDMY(a["Fecha de realización"]);
-  const hora = formatearHora(
-    a["Hora de INICIO"],
-    a["Hora de FINALIZACIÓN"]
-  );
+  const fecha = mostrarFecha(a["Fecha de realización"]);
+  const hora = mostrarHora(a["Hora de INICIO"], a["Hora de FINALIZACIÓN"]);
 
-  let bloques = `
+  let html = `
     <div class="fecha">${fecha}${hora ? " | " + hora : ""}</div>
     <h3>${a["Nombre de la actividad"]}</h3>
 
@@ -215,31 +227,33 @@ function buildActivityCard(a) {
     <div><strong>Modalidad:</strong> ${a["Modalidad"]}</div>
   `;
 
-  // Modalidad
   if (a["Modalidad"] === "Presencial") {
-    bloques += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>`;
+    html += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>`;
   }
 
-  if (a["Modalidad"] === "Virtual" ||
-      a["Modalidad"] === "Publicaciones (Infografias, videos, podcast, etc)") {
-    bloques += `
+  if (
+    a["Modalidad"] === "Virtual" ||
+    a["Modalidad"] === "Publicaciones (Infografias, videos, podcast, etc)"
+  ) {
+    html += `
       <div><strong>Enlace del evento:</strong>
         <a href="${a["Enlace del evento"]}" target="_blank">${a["Enlace del evento"]}</a>
       </div>`;
   }
 
   if (a["Modalidad"] === "Híbrida (presencial con transmisión online)") {
-    bloques += `
+    html += `
       <div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>
       <div><strong>Enlace del evento:</strong>
         <a href="${a["Enlace del evento"]}" target="_blank">${a["Enlace del evento"]}</a>
       </div>`;
   }
 
-  // Inscripción
-  if (a["Inscripción: ¿El evento requiere inscripción previa?"] ===
-      "El evento requiere inscripción previa") {
-    bloques += `
+  if (
+    a["Inscripción: ¿El evento requiere inscripción previa?"] ===
+    "El evento requiere inscripción previa"
+  ) {
+    html += `
       <div><strong>Enlace de inscripción:</strong>
         <a href="${a["Enlace a inscripción (solo si se necesita)"]}" target="_blank">
           ${a["Enlace a inscripción (solo si se necesita)"]}
@@ -248,7 +262,7 @@ function buildActivityCard(a) {
   }
 
   if (a["Enlace para más información"]) {
-    bloques += `
+    html += `
       <div><strong>Más información:</strong>
         <a href="${a["Enlace para más información"]}" target="_blank">
           ${a["Enlace para más información"]}
@@ -257,18 +271,18 @@ function buildActivityCard(a) {
   }
 
   if (a["Información adicional que se debe detallar en la agenda"]) {
-    bloques += `
+    html += `
       <div><strong>Información adicional:</strong>
         ${a["Información adicional que se debe detallar en la agenda"]}
       </div>`;
   }
 
-  bloques += `
+  html += `
     <div><strong>Contacto:</strong>
       ${a["Nombres"]} ${a["Apellidos"]} – ${a["Correo electrónico"]}
     </div>
   `;
 
-  div.innerHTML = bloques;
+  div.innerHTML = html;
   return div;
 }
