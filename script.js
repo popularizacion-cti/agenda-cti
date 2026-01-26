@@ -20,7 +20,7 @@ function parseFechaFiltro(valor) {
   return isNaN(f) ? null : f;
 }
 
-// SOLO para mostrar (NO tocar)
+// SOLO para mostrar
 function mostrarFecha(valor) {
   if (!valor) return "";
   if (typeof valor === "string" && valor.includes("/")) return valor;
@@ -65,13 +65,9 @@ function mostrarHora(inicio, fin) {
    FETCH
 ======================= */
 
-console.log("Iniciando fetch...");
-
 fetch(ENDPOINT)
   .then(r => r.json())
   .then(data => {
-    console.log("Datos recibidos:", data.length);
-
     ALL_ACTIVITIES = data
       .filter(a => a["Aprobado"] === "Si" || a["Aprobado"] === "SI")
       .map(a => ({
@@ -86,7 +82,7 @@ fetch(ENDPOINT)
     buildFilters(ALL_ACTIVITIES);
   })
   .catch(err => {
-    console.error("Error en fetch:", err);
+    console.error(err);
     document.getElementById("agenda").innerText =
       "Error cargando actividades";
   });
@@ -102,19 +98,33 @@ function renderWeeklyAgenda(list) {
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 
-  const fin = new Date(hoy);
-  fin.setDate(hoy.getDate() + 7);
-  fin.setHours(23, 59, 59, 999);
+  // calcular lunes de la semana actual
+  const dia = hoy.getDay(); // 0=domingo
+  const diffLunes = dia === 0 ? -6 : 1 - dia;
+
+  const lunes = new Date(hoy);
+  lunes.setDate(hoy.getDate() + diffLunes);
+  lunes.setHours(0, 0, 0, 0);
+
+  const domingo = new Date(lunes);
+  domingo.setDate(lunes.getDate() + 6);
+  domingo.setHours(23, 59, 59, 999);
+
+  // no mostrar días pasados
+  const inicioVisible = hoy > lunes ? hoy : lunes;
 
   const semanal = list
     .filter(
-      a => a._fechaFiltro && a._fechaFiltro >= hoy && a._fechaFiltro <= fin
+      a =>
+        a._fechaFiltro &&
+        a._fechaFiltro >= inicioVisible &&
+        a._fechaFiltro <= domingo
     )
     .sort((a, b) => a._fechaFiltro - b._fechaFiltro);
 
   if (!semanal.length) {
     cont.innerHTML =
-      `<div class="sin-actividades">No hay actividades esta semana.</div>`;
+      `<div class="sin-actividades">No hay actividades para el resto de la semana.</div>`;
     return;
   }
 
