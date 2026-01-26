@@ -1,290 +1,126 @@
-const ENDPOINT =
-  "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgsulD9_FCTr9PvlGiPakHQXybbgLXGIsm7bdn7aOIsrVg9qiw/exec";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Agenda CTI – Semana actual</title>
 
-let ALL_ACTIVITIES = [];
+  <style>
+    :root {
+      --filtro-select-width: 200px;
+    }
 
-/* =======================
-   FECHAS
-======================= */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+    }
 
-// SOLO para filtros
-function parseFechaFiltro(valor) {
-  if (!valor) return null;
+    .main-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-  if (typeof valor === "string" && valor.includes("/")) {
-    const [d, m, y] = valor.split("/");
-    return new Date(`${y}-${m}-${d}T00:00:00`);
-  }
+    /* TÍTULOS UNIFICADOS */
+    h1, h2 {
+      color: #003366;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      font-weight: 700;
+    }
 
-  const f = new Date(valor);
-  return isNaN(f) ? null : f;
-}
+    /* TARJETA */
+    .actividad {
+      background: #ffffff;
+      border-left: 5px solid #0066cc;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      word-break: break-word;
+    }
 
-// SOLO para mostrar (NO tocar)
-function mostrarFecha(valor) {
-  if (!valor) return "";
-  if (typeof valor === "string" && valor.includes("/")) return valor;
+    .fecha {
+      font-weight: bold;
+      color: #0066cc;
+      margin-bottom: 5px;
+    }
 
-  const d = new Date(valor);
-  if (isNaN(d)) return "";
+    .institucion {
+      font-size: 0.95em;
+      color: #000;
+      font-weight: 600;
+      font-style: normal;
+      margin-bottom: 8px;
+    }
 
-  return `${String(d.getDate()).padStart(2, "0")}/${String(
-    d.getMonth() + 1
-  ).padStart(2, "0")}/${d.getFullYear()}`;
-}
+    .actividad h3 {
+      margin: 6px 0;
+      color: #003366;
+    }
 
-/* =======================
-   HORAS (CLAVE)
-======================= */
+    .actividad p {
+      font-style: normal;
+      color: #000;
+      margin: 6px 0 10px 0;
+    }
 
-// Convierte ISO o texto → HH:MM
-function limpiarHora(valor) {
-  if (!valor) return "";
+    .sin-actividades {
+      background: #fff3cd;
+      padding: 15px;
+      border-left: 5px solid #ffc107;
+    }
 
-  // Si viene como ISO (1899-12-30T21:08:36.000Z)
-  if (typeof valor === "string" && valor.includes("T")) {
-    const d = new Date(valor);
-    if (isNaN(d)) return "";
-    return d.toLocaleTimeString("es-PE", {
-      hour: "2-digit",
-      minute: "2-digit",
-      hour12: false
-    });
-  }
+    /* FILTROS */
+    .filtros {
+      background: #ffffff;
+      padding: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-  // Si ya es texto HH:MM
-  return valor;
-}
+    .filtros select {
+      width: var(--filtro-select-width);
+      max-width: var(--filtro-select-width);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
 
-function mostrarHora(inicio, fin) {
-  const h1 = limpiarHora(inicio);
-  const h2 = limpiarHora(fin);
+    .filtros input[type="date"] {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
 
-  if (h1 && h2) return `${h1} - ${h2}`;
-  return h1 || h2 || "";
-}
+    .filtros button {
+      padding: 6px 12px;
+      margin-right: 5px;
+      cursor: pointer;
+    }
 
-/* =======================
-   FETCH
-======================= */
-fetch(ENDPOINT)
-  .then(r => r.json())
-  .then(data => {
-    ALL_ACTIVITIES = data
-      .filter(a => a["Aprobado"] === "Si" || a["Aprobado"] === "SI")
-      .map(a => ({
-        ...a,
-        _fechaFiltro: parseFechaFiltro(a["Fecha de realización"]),
-        _publicos: a["Público objetivo"]
-          ? a["Público objetivo"].split(",").map(p => p.trim())
-          : []
-      }));
+    a {
+      word-break: break-all;
+    }
+  </style>
+</head>
 
-    renderWeeklyAgenda(ALL_ACTIVITIES);
-    buildFilters(ALL_ACTIVITIES);
-  })
-  .catch(err => {
-    console.error(err);
-    document.getElementById("agenda").innerText =
-      "Error cargando actividades";
-  });
+<body>
 
-/* =======================
-   AGENDA SEMANAL
-======================= */
-function renderWeeklyAgenda(list) {
-  const cont = document.getElementById("agenda");
-  cont.innerHTML = "";
+<div class="main-container">
 
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
+  <h2>🔎 Filtrar actividades</h2>
+  <div id="filtros-cti" class="filtros"></div>
 
-  const fin = new Date(hoy);
-  fin.setDate(hoy.getDate() + 7);
-  fin.setHours(23, 59, 59, 999);
+  <div id="resultados-filtro"></div>
 
-  const semanal = list
-    .filter(a => a._fechaFiltro && a._fechaFiltro >= hoy && a._fechaFiltro <= fin)
-    .sort((a, b) => a._fechaFiltro - b._fechaFiltro);
+  <h2>Actividades de esta semana</h2>
+  <div id="agenda">Cargando actividades…</div>
 
-  if (!semanal.length) {
-    cont.innerHTML =
-      `<div class="sin-actividades">No hay actividades esta semana.</div>`;
-    return;
-  }
+</div>
 
-  semanal.forEach(a => cont.appendChild(buildCard(a)));
-}
-
-/* =======================
-   FILTROS
-======================= */
-function buildFilters(list) {
-  const div = document.getElementById("filtros-cti");
-
-  const uniq = arr => [...new Set(arr)].filter(Boolean).sort();
-
-  const regiones = uniq(list.map(a => a["Región"]));
-  const modalidades = uniq(list.map(a => a["Modalidad"]));
-  const publicos = uniq(list.flatMap(a => a._publicos));
-
-  div.innerHTML = `
-    <select id="f-region">
-      <option value="">Región</option>
-      ${regiones.map(r => `<option>${r}</option>`).join("")}
-    </select>
-
-    <select id="f-modalidad">
-      <option value="">Modalidad</option>
-      ${modalidades.map(m => `<option>${m}</option>`).join("")}
-    </select>
-
-    <select id="f-publico">
-      <option value="">Público objetivo</option>
-      ${publicos.map(p => `<option>${p}</option>`).join("")}
-    </select>
-
-    Desde: <input type="date" id="f-desde">
-    Hasta: <input type="date" id="f-hasta">
-
-    <br><br>
-    <button onclick="applyFilters()">Filtrar</button>
-    <button onclick="clearFilters()">Limpiar</button>
-  `;
-}
-
-function applyFilters() {
-  const region = f("f-region");
-  const modalidad = f("f-modalidad");
-  const publico = f("f-publico");
-  const desde = f("f-desde");
-  const hasta = f("f-hasta");
-
-  const dDesde = desde ? new Date(desde + "T00:00:00") : null;
-  const dHasta = hasta
-    ? new Date(hasta + "T23:59:59.999")
-    : null;
-
-  const res = ALL_ACTIVITIES.filter(a => {
-    if (region && a["Región"] !== region) return false;
-    if (modalidad && a["Modalidad"] !== modalidad) return false;
-    if (publico && !a._publicos.includes(publico)) return false;
-    if (!a._fechaFiltro) return false;
-    if (dDesde && a._fechaFiltro < dDesde) return false;
-    if (dHasta && a._fechaFiltro > dHasta) return false;
-    return true;
-  });
-
-  renderFilterResults(res.sort((a, b) => a._fechaFiltro - b._fechaFiltro));
-}
-
-function clearFilters() {
-  document
-    .querySelectorAll("#filtros-cti select, #filtros-cti input")
-    .forEach(e => (e.value = ""));
-  document.getElementById("resultados-filtro").innerHTML = "";
-}
-
-function f(id) {
-  return document.getElementById(id).value;
-}
-
-/* =======================
-   RESULTADOS
-======================= */
-function renderFilterResults(list) {
-  const div = document.getElementById("resultados-filtro");
-  div.innerHTML = "<h2>📋 Resultados del filtro</h2>";
-
-  if (!list.length) {
-    div.innerHTML +=
-      `<div class="sin-actividades">No se encontraron actividades.</div>`;
-    return;
-  }
-
-  list.forEach(a => div.appendChild(buildCard(a)));
-}
-
-/* =======================
-   CARD
-======================= */
-function buildCard(a) {
-  const div = document.createElement("div");
-  div.className = "actividad";
-
-  const fecha = mostrarFecha(a["Fecha de realización"]);
-  const hora = mostrarHora(a["Hora de INICIO"], a["Hora de FINALIZACIÓN"]);
-
-  let html = `
-    <div class="fecha">${fecha}${hora ? " | " + hora : ""}</div>
-    <h3>${a["Nombre de la actividad"]}</h3>
-
-    <div class="institucion">
-      ${a["Nombre de la entidad"]} · ${a["Región"]}
-    </div>
-
-    <p>${a["Resumen de la actividad"]}</p>
-
-    <div><strong>Público objetivo:</strong> ${a["Público objetivo"]}</div>
-    <div><strong>Modalidad:</strong> ${a["Modalidad"]}</div>
-  `;
-
-  if (a["Modalidad"] === "Presencial") {
-    html += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>`;
-  }
-
-  if (
-    a["Modalidad"] === "Virtual" ||
-    a["Modalidad"] === "Publicaciones (Infografias, videos, podcast, etc)"
-  ) {
-    html += `
-      <div><strong>Enlace del evento:</strong>
-        <a href="${a["Enlace del evento"]}" target="_blank">${a["Enlace del evento"]}</a>
-      </div>`;
-  }
-
-  if (a["Modalidad"] === "Híbrida (presencial con transmisión online)") {
-    html += `
-      <div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>
-      <div><strong>Enlace del evento:</strong>
-        <a href="${a["Enlace del evento"]}" target="_blank">${a["Enlace del evento"]}</a>
-      </div>`;
-  }
-
-  if (
-    a["Inscripción: ¿El evento requiere inscripción previa?"] ===
-    "El evento requiere inscripción previa"
-  ) {
-    html += `
-      <div><strong>Enlace de inscripción:</strong>
-        <a href="${a["Enlace a inscripción (solo si se necesita)"]}" target="_blank">
-          ${a["Enlace a inscripción (solo si se necesita)"]}
-        </a>
-      </div>`;
-  }
-
-  if (a["Enlace para más información"]) {
-    html += `
-      <div><strong>Más información:</strong>
-        <a href="${a["Enlace para más información"]}" target="_blank">
-          ${a["Enlace para más información"]}
-        </a>
-      </div>`;
-  }
-
-  if (a["Información adicional que se debe detallar en la agenda"]) {
-    html += `
-      <div><strong>Información adicional:</strong>
-        ${a["Información adicional que se debe detallar en la agenda"]}
-      </div>`;
-  }
-
-  html += `
-    <div><strong>Contacto:</strong>
-      ${a["Nombres"]} ${a["Apellidos"]} – ${a["Correo electrónico"]}
-    </div>
-  `;
-
-  div.innerHTML = html;
-  return div;
-}
+<script src="script.js"></script>
+</body>
+</html>
