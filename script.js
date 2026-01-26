@@ -8,15 +8,39 @@ let dataGlobal = [];
 
 function parseFecha(fecha) {
   if (!fecha) return null;
-  const [d, m, y] = fecha.split("/");
-  return new Date(`${y}-${m}-${d}`);
+
+  // Si viene ISO
+  if (typeof fecha === "string" && fecha.includes("T")) {
+    const d = new Date(fecha);
+    return isNaN(d) ? null : d;
+  }
+
+  // DD/MM/YYYY
+  if (fecha.includes("/")) {
+    const [d, m, y] = fecha.split("/");
+    return new Date(y, m - 1, d);
+  }
+
+  const d = new Date(fecha);
+  return isNaN(d) ? null : d;
+}
+
+function formatFecha(date) {
+  if (!date) return "";
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
 }
 
 function estaEnSemanaActual(fecha) {
+  if (!fecha) return false;
+
   const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+
   const inicio = new Date(hoy);
   inicio.setDate(hoy.getDate() - hoy.getDay() + 1);
-  inicio.setHours(0, 0, 0, 0);
 
   const fin = new Date(inicio);
   fin.setDate(inicio.getDate() + 6);
@@ -25,54 +49,103 @@ function estaEnSemanaActual(fecha) {
   return fecha >= inicio && fecha <= fin;
 }
 
+/* =========================
+   RENDER CARD
+========================= */
+
 function formatearActividad(item) {
+  const fechaObj = parseFecha(item["Fecha de realización"]);
+  const fechaTexto = formatFecha(fechaObj);
+
+  const horaInicio = item["Hora de INICIO"] || "";
+  const horaFin = item["Hora de FINALIZACIÓN"] || "";
+  const horaTexto = horaInicio || horaFin ? `${horaInicio} - ${horaFin}` : "";
+
   let html = `
     <div class="actividad">
+
       <div class="fecha">
-        ${item["Fecha de realización"]} | ${item["Hora de INICIO"]} - ${item["Hora de FINALIZACIÓN"]}
+        ${fechaTexto}${horaTexto ? " | " + horaTexto : ""}
       </div>
 
       <div class="institucion">
-        ${item["Nombre de la entidad"]} – ${item["Región"]} / ${item["Provincia"]}
+        ${item["Nombre de la entidad"]} – ${item["Región"]}
       </div>
 
       <strong>${item["Nombre de la actividad"]}</strong><br>
-      ${item["Resumen de la actividad"]}<br><br>
+      <p>${item["Resumen de la actividad"]}</p>
+
+      <div><strong>Público objetivo:</strong> ${item["Público objetivo"] || ""}</div>
+      <div><strong>Modalidad:</strong> ${item["Modalidad"]}</div>
   `;
 
   const modalidad = item["Modalidad"];
 
+  // PRESENCIAL
   if (modalidad === "Presencial") {
-    html += `<strong>Lugar del evento:</strong> ${item["Lugar del evento"]}<br>`;
+    html += `<div><strong>Lugar del evento:</strong> ${item["Lugar del evento"]}</div>`;
   }
 
-  if (modalidad === "Virtual" || modalidad === "Publicaciones (Infografias, videos, podcast, etc)") {
-    html += `<strong>Enlace del evento:</strong> <a href="${item["Enlace del evento"]}" target="_blank">${item["Enlace del evento"]}</a><br>`;
+  // VIRTUAL o PUBLICACIONES
+  if (
+    modalidad === "Virtual" ||
+    modalidad === "Publicaciones (Infografias, videos, podcast, etc)"
+  ) {
+    html += `
+      <div><strong>Enlace del evento:</strong>
+        <a href="${item["Enlace del evento"]}" target="_blank">
+          ${item["Enlace del evento"]}
+        </a>
+      </div>`;
   }
 
+  // HÍBRIDO
   if (modalidad === "Híbrida (presencial con transmisión online)") {
     html += `
-      <strong>Lugar del evento:</strong> ${item["Lugar del evento"]}<br>
-      <strong>Enlace del evento:</strong> <a href="${item["Enlace del evento"]}" target="_blank">${item["Enlace del evento"]}</a><br>
-    `;
+      <div><strong>Lugar del evento:</strong> ${item["Lugar del evento"]}</div>
+      <div><strong>Enlace del evento:</strong>
+        <a href="${item["Enlace del evento"]}" target="_blank">
+          ${item["Enlace del evento"]}
+        </a>
+      </div>`;
   }
 
+  // INSCRIPCIÓN
   if (item["Inscripción: ¿El evento requiere inscripción previa?"] === "El evento requiere inscripción previa") {
-    html += `<strong>Enlace de inscripción:</strong> <a href="${item["Enlace a inscripción (solo si se necesita)"]}" target="_blank">${item["Enlace a inscripción (solo si se necesita)"]}</a><br>`;
+    html += `
+      <div><strong>Enlace de inscripción:</strong>
+        <a href="${item["Enlace a inscripción (solo si se necesita)"]}" target="_blank">
+          ${item["Enlace a inscripción (solo si se necesita)"]}
+        </a>
+      </div>`;
   }
 
+  // MÁS INFO
   if (item["Enlace para más información"]) {
-    html += `<strong>Más información:</strong> <a href="${item["Enlace para más información"]}" target="_blank">${item["Enlace para más información"]}</a><br>`;
+    html += `
+      <div><strong>Más información:</strong>
+        <a href="${item["Enlace para más información"]}" target="_blank">
+          ${item["Enlace para más información"]}
+        </a>
+      </div>`;
   }
 
+  // INFO ADICIONAL
   if (item["Información adicional que se debe detallar en la agenda"]) {
-    html += `<strong>Información adicional:</strong> ${item["Información adicional que se debe detallar en la agenda"]}<br>`;
+    html += `
+      <div><strong>Información adicional:</strong>
+        ${item["Información adicional que se debe detallar en la agenda"]}
+      </div>`;
   }
 
+  // CONTACTO
   html += `
-    <strong>Contacto:</strong>
-    ${item["Nombres"]} ${item["Apellidos"]} – ${item["Correo electrónico"]}
-  </div>`;
+      <div><strong>Contacto:</strong>
+        ${item["Nombres"]} ${item["Apellidos"]} – ${item["Correo electrónico"]}
+      </div>
+
+    </div>
+  `;
 
   return html;
 }
@@ -146,6 +219,10 @@ function aplicarFiltros() {
     filtrado = filtrado.filter(d => parseFecha(d["Fecha de realización"]) <= fHasta);
   }
 
+  filtrado.sort((a, b) =>
+    parseFecha(a["Fecha de realización"]) - parseFecha(b["Fecha de realización"])
+  );
+
   const cont = document.getElementById("resultados-filtro");
   cont.innerHTML = filtrado.length
     ? filtrado.map(formatearActividad).join("")
@@ -167,9 +244,11 @@ fetch(API_URL)
 
     crearFiltros(dataGlobal);
 
-    const semana = dataGlobal.filter(d =>
-      estaEnSemanaActual(parseFecha(d["Fecha de realización"]))
-    );
+    const semana = dataGlobal
+      .filter(d => estaEnSemanaActual(parseFecha(d["Fecha de realización"])))
+      .sort((a, b) =>
+        parseFecha(a["Fecha de realización"]) - parseFecha(b["Fecha de realización"])
+      );
 
     const agenda = document.getElementById("agenda");
     agenda.classList.remove("loading");
