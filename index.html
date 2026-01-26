@@ -5,6 +5,10 @@
   <title>Agenda CTI – Semana actual</title>
 
   <style>
+    :root {
+      --filtro-select-width: 220px; /* ⬅️ AJUSTA AQUÍ EL ANCHO DE LOS SELECT */
+    }
+
     body {
       font-family: Arial, sans-serif;
       background: #f8f9fa;
@@ -53,6 +57,7 @@
       border-left: 5px solid #ffc107;
     }
 
+    /* --- filtros --- */
     .filtros {
       background: #ffffff;
       padding: 15px;
@@ -60,8 +65,20 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    .filtros select,
-    .filtros input {
+    /* SELECT con ancho limitado */
+    .filtros select {
+      width: var(--filtro-select-width);
+      max-width: var(--filtro-select-width);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      padding: 5px;
+    }
+
+    /* INPUTS (fechas) sin limitar */
+    .filtros input[type="date"] {
       margin-right: 10px;
       margin-bottom: 10px;
       padding: 5px;
