@@ -179,4 +179,96 @@ function renderFilterResults(list) {
   const div = document.getElementById("resultados-filtro");
   div.innerHTML = "<h2>📋 Resultados del filtro</h2>";
 
-  if (list
+  if (list.length === 0) {
+    div.innerHTML +=
+      `<div class="sin-actividades">No se encontraron actividades.</div>`;
+    return;
+  }
+
+  list.forEach(a => div.appendChild(buildActivityCard(a)));
+}
+
+/* =======================
+   CARD
+======================= */
+function buildActivityCard(a) {
+  const div = document.createElement("div");
+  div.className = "actividad";
+
+  const fecha = formatearFechaDMY(a["Fecha de realización"]);
+  const hora = formatearHora(
+    a["Hora de INICIO"],
+    a["Hora de FINALIZACIÓN"]
+  );
+
+  let bloques = `
+    <div class="fecha">${fecha}${hora ? " | " + hora : ""}</div>
+    <h3>${a["Nombre de la actividad"]}</h3>
+
+    <div class="institucion">
+      ${a["Nombre de la entidad"]} · ${a["Región"]}
+    </div>
+
+    <p>${a["Resumen de la actividad"]}</p>
+
+    <div><strong>Público objetivo:</strong> ${a["Público objetivo"]}</div>
+    <div><strong>Modalidad:</strong> ${a["Modalidad"]}</div>
+  `;
+
+  // Modalidad
+  if (a["Modalidad"] === "Presencial") {
+    bloques += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>`;
+  }
+
+  if (a["Modalidad"] === "Virtual" ||
+      a["Modalidad"] === "Publicaciones (Infografias, videos, podcast, etc)") {
+    bloques += `
+      <div><strong>Enlace del evento:</strong>
+        <a href="${a["Enlace del evento"]}" target="_blank">${a["Enlace del evento"]}</a>
+      </div>`;
+  }
+
+  if (a["Modalidad"] === "Híbrida (presencial con transmisión online)") {
+    bloques += `
+      <div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>
+      <div><strong>Enlace del evento:</strong>
+        <a href="${a["Enlace del evento"]}" target="_blank">${a["Enlace del evento"]}</a>
+      </div>`;
+  }
+
+  // Inscripción
+  if (a["Inscripción: ¿El evento requiere inscripción previa?"] ===
+      "El evento requiere inscripción previa") {
+    bloques += `
+      <div><strong>Enlace de inscripción:</strong>
+        <a href="${a["Enlace a inscripción (solo si se necesita)"]}" target="_blank">
+          ${a["Enlace a inscripción (solo si se necesita)"]}
+        </a>
+      </div>`;
+  }
+
+  if (a["Enlace para más información"]) {
+    bloques += `
+      <div><strong>Más información:</strong>
+        <a href="${a["Enlace para más información"]}" target="_blank">
+          ${a["Enlace para más información"]}
+        </a>
+      </div>`;
+  }
+
+  if (a["Información adicional que se debe detallar en la agenda"]) {
+    bloques += `
+      <div><strong>Información adicional:</strong>
+        ${a["Información adicional que se debe detallar en la agenda"]}
+      </div>`;
+  }
+
+  bloques += `
+    <div><strong>Contacto:</strong>
+      ${a["Nombres"]} ${a["Apellidos"]} – ${a["Correo electrónico"]}
+    </div>
+  `;
+
+  div.innerHTML = bloques;
+  return div;
+}
