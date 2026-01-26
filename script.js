@@ -160,8 +160,10 @@ function applyFilters() {
   const desde = f("f-desde");
   const hasta = f("f-hasta");
 
-  const dDesde = desde ? new Date(desde) : null;
-  const dHasta = hasta ? new Date(hasta) : null;
+  const dDesde = desde ? new Date(desde + "T00:00:00") : null;
+  const dHasta = hasta
+    ? new Date(hasta + "T23:59:59.999")
+    : null;
 
   const res = ALL_ACTIVITIES.filter(a => {
     if (region && a["Región"] !== region) return false;
