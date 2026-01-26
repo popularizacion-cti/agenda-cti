@@ -1,259 +1,182 @@
-const DATA_URL = "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgsulD9_FCTr9PvlGiPakHQXybbgLXGIsm7bdn7aOIsrVg9qiw/exec";
+const ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbzZ4xNNHyuizCzw36lovgsulD9_FCTr9PvlGiPakHQXybbgLXGIsm7bdn7aOIsrVg9qiw/exec";
 
-/* ===============================
-   UTILIDADES
-================================ */
+let ALL_ACTIVITIES = [];
 
-function parseFechaDMY(fechaStr) {
-  if (!fechaStr) return null;
-  const [d, m, y] = fechaStr.split("/");
-  return new Date(`${y}-${m}-${d}T00:00:00`);
+/* =======================
+   FECHAS
+======================= */
+
+// Para filtros (Date real)
+function parseFechaDMY(valor) {
+  if (!valor) return null;
+
+  if (typeof valor === "string" && valor.includes("/")) {
+    const [d, m, y] = valor.split("/");
+    return new Date(`${y}-${m}-${d}T00:00:00`);
+  }
+
+  const f = new Date(valor);
+  return isNaN(f) ? null : f;
 }
 
-function formatearFechaDMY(fechaStr) {
-  if (!fechaStr) return "";
-  return fechaStr; // viene bien desde Sheets
-}
-
-function extraerHora(valor) {
+// Para mostrar (SIEMPRE dd/mm/yyyy)
+function formatearFechaDMY(valor) {
   if (!valor) return "";
 
-  // Si viene como fecha ISO (1899-12-30T21:08:36.000Z)
-  if (typeof valor === "string" && valor.includes("T")) {
-    return valor.substring(11, 16); // HH:MM
+  if (typeof valor === "string" && valor.includes("/")) {
+    return valor;
   }
 
-  // Si ya viene como texto (01:00, 1:00, etc.)
-  return valor;
+  const d = new Date(valor);
+  if (isNaN(d)) return "";
+
+  const dia = String(d.getDate()).padStart(2, "0");
+  const mes = String(d.getMonth() + 1).padStart(2, "0");
+  const anio = d.getFullYear();
+
+  return `${dia}/${mes}/${anio}`;
 }
 
-/* ===============================
-   FORMATEO DE ACTIVIDAD
-================================ */
-
-function formatearActividad(item) {
-  const fecha = formatearFechaDMY(item["Fecha de realización"]);
-
-  const horaInicio = extraerHora(item["Hora de INICIO"]);
-  const horaFin = extraerHora(item["Hora de FINALIZACIÓN"]);
-  const horaTexto = (horaInicio || horaFin) ? `${horaInicio} - ${horaFin}` : "";
-
-  let html = `<div class="actividad">`;
-
-  // Fecha y hora
-  html += `<div class="fecha">${fecha}${horaTexto ? " | " + horaTexto : ""}</div>`;
-
-  // Título
-  html += `<h3>${item["Nombre de la actividad"] || ""}</h3>`;
-
-  // Institución y región
-  html += `
-    <div class="institucion">
-      ${item["Nombre de la entidad"] || ""} – ${item["Región"] || ""}
-    </div>
-  `;
-
-  // Público objetivo y modalidad
-  html += `<div><strong>Público objetivo:</strong> ${item["Público objetivo"] || ""}</div>`;
-  html += `<div><strong>Modalidad:</strong> ${item["Modalidad"] || ""}</div>`;
-
-  // Resumen
-  if (item["Resumen de la actividad"]) {
-    html += `<p>${item["Resumen de la actividad"]}</p>`;
-  }
-
-  // Lógica por modalidad
-  const modalidad = item["Modalidad"] || "";
-
-  if (modalidad === "Presencial") {
-    if (item["Lugar del evento"]) {
-      html += `<div><strong>Lugar del evento:</strong> ${item["Lugar del evento"]}</div>`;
-    }
-  }
-
-  if (modalidad === "Virtual" || modalidad === "Publicaciones (Infografias, videos, podcast, etc)") {
-    if (item["Enlace del evento"]) {
-      html += `<div><strong>Enlace del evento:</strong> <a href="${item["Enlace del evento"]}" target="_blank">${item["Enlace del evento"]}</a></div>`;
-    }
-  }
-
-  if (modalidad === "Híbrida (presencial con transmisión online)") {
-    if (item["Lugar del evento"]) {
-      html += `<div><strong>Lugar del evento:</strong> ${item["Lugar del evento"]}</div>`;
-    }
-    if (item["Enlace del evento"]) {
-      html += `<div><strong>Enlace del evento:</strong> <a href="${item["Enlace del evento"]}" target="_blank">${item["Enlace del evento"]}</a></div>`;
-    }
-  }
-
-  // Inscripción
-  if (item["Inscripción: ¿El evento requiere inscripción previa?"] === "El evento requiere inscripción previa") {
-    if (item["Enlace a inscripción (solo si se necesita)"]) {
-      html += `<div><strong>Enlace de inscripción:</strong> <a href="${item["Enlace a inscripción (solo si se necesita)"]}" target="_blank">${item["Enlace a inscripción (solo si se necesita)"]}</a></div>`;
-    }
-  }
-
-  // Más información
-  if (item["Enlace para más información"]) {
-    html += `<div><strong>Más información:</strong> <a href="${item["Enlace para más información"]}" target="_blank">${item["Enlace para más información"]}</a></div>`;
-  }
-
-  // Información adicional
-  if (item["Información adicional que se debe detallar en la agenda"]) {
-    html += `<div><strong>Información adicional:</strong> ${item["Información adicional que se debe detallar en la agenda"]}</div>`;
-  }
-
-  // Contacto
-  html += `
-    <div>
-      <strong>Contacto:</strong>
-      ${item["Nombres"] || ""} ${item["Apellidos"] || ""} – ${item["Correo electrónico"] || ""}
-    </div>
-  `;
-
-  html += `</div>`;
-  return html;
+// Hora SOLO como texto
+function formatearHora(inicio, fin) {
+  if (!inicio && !fin) return "";
+  if (inicio && fin) return `${inicio} - ${fin}`;
+  return inicio || fin;
 }
 
-/* ===============================
-   CARGA DE DATOS
-================================ */
-
-let DATA = [];
-
-fetch(DATA_URL)
+/* =======================
+   FETCH
+======================= */
+fetch(ENDPOINT)
   .then(r => r.json())
-  .then(json => {
-    DATA = json;
-    cargarAgendaSemana();
-    crearFiltros();
+  .then(data => {
+    ALL_ACTIVITIES = data
+      .filter(a => a["Aprobado"] === "Si" || a["Aprobado"] === "SI")
+      .map(a => ({
+        ...a,
+        _fechaObj: parseFechaDMY(a["Fecha de realización"]),
+        _publicos: a["Público objetivo"]
+          ? a["Público objetivo"].split(",").map(p => p.trim())
+          : []
+      }));
+
+    renderWeeklyAgenda(ALL_ACTIVITIES);
+    buildFilters(ALL_ACTIVITIES);
   })
-  .catch(() => {
-    document.getElementById("agenda").innerHTML = "Error al cargar los datos.";
+  .catch(err => {
+    console.error(err);
+    document.getElementById("agenda").innerText =
+      "Error cargando actividades";
   });
 
-/* ===============================
+/* =======================
    AGENDA SEMANAL
-================================ */
-
-function cargarAgendaSemana() {
-  const cont = document.getElementById("agenda");
-  cont.innerHTML = "";
+======================= */
+function renderWeeklyAgenda(activities) {
+  const container = document.getElementById("agenda");
+  container.innerHTML = "";
 
   const hoy = new Date();
   hoy.setHours(0, 0, 0, 0);
 
   const finSemana = new Date(hoy);
   finSemana.setDate(hoy.getDate() + 7);
+  finSemana.setHours(23, 59, 59, 999);
 
-  const actividades = DATA.filter(item => {
-    const f = parseFechaDMY(item["Fecha de realización"]);
-    return f && f >= hoy && f <= finSemana;
-  });
+  const semanal = activities
+    .filter(a => a._fechaObj && a._fechaObj >= hoy && a._fechaObj <= finSemana)
+    .sort((a, b) => a._fechaObj - b._fechaObj);
 
-  if (!actividades.length) {
-    cont.innerHTML = `<div class="sin-actividades">No hay actividades esta semana.</div>`;
+  if (semanal.length === 0) {
+    container.innerHTML =
+      `<div class="sin-actividades">No hay actividades esta semana.</div>`;
     return;
   }
 
-  actividades
-    .sort((a, b) =>
-      parseFechaDMY(a["Fecha de realización"]) -
-      parseFechaDMY(b["Fecha de realización"])
-    )
-    .forEach(item => {
-      cont.innerHTML += formatearActividad(item);
-    });
+  semanal.forEach(a => container.appendChild(buildActivityCard(a)));
 }
 
-/* ===============================
+/* =======================
    FILTROS
-================================ */
+======================= */
+function buildFilters(activities) {
+  const div = document.getElementById("filtros-cti");
 
-function crearFiltros() {
-  const cont = document.getElementById("filtros-cti");
+  const unique = arr =>
+    [...new Set(arr)].filter(v => v).sort();
 
-  const regiones = [...new Set(DATA.map(d => d["Región"]).filter(Boolean))].sort();
-  const modalidades = [...new Set(DATA.map(d => d["Modalidad"]).filter(Boolean))].sort();
+  const regiones = unique(activities.map(a => a["Región"]));
+  const modalidades = unique(activities.map(a => a["Modalidad"]));
+  const publicos = unique(
+    activities.flatMap(a => a._publicos)
+  );
 
-  // Público objetivo (separado por coma)
-  const publicos = new Set();
-  DATA.forEach(d => {
-    if (d["Público objetivo"]) {
-      d["Público objetivo"].split(", ").forEach(p => publicos.add(p));
-    }
-  });
-
-  cont.innerHTML = `
+  div.innerHTML = `
     <select id="f-region">
       <option value="">Región</option>
-      ${regiones.map(r => `<option value="${r}">${r}</option>`).join("")}
+      ${regiones.map(r => `<option>${r}</option>`).join("")}
     </select>
 
     <select id="f-modalidad">
       <option value="">Modalidad</option>
-      ${modalidades.map(m => `<option value="${m}">${m}</option>`).join("")}
+      ${modalidades.map(m => `<option>${m}</option>`).join("")}
     </select>
 
     <select id="f-publico">
       <option value="">Público objetivo</option>
-      ${[...publicos].sort().map(p => `<option value="${p}">${p}</option>`).join("")}
+      ${publicos.map(p => `<option>${p}</option>`).join("")}
     </select>
 
+    Desde:
     <input type="date" id="f-desde">
+    Hasta:
     <input type="date" id="f-hasta">
 
-    <button onclick="aplicarFiltros()">Filtrar</button>
-    <button onclick="limpiarFiltros()">Limpiar</button>
+    <br><br>
+
+    <button onclick="applyFilters()">Filtrar</button>
+    <button onclick="clearFilters()">Limpiar</button>
   `;
 }
 
-function aplicarFiltros() {
+function applyFilters() {
   const region = document.getElementById("f-region").value;
   const modalidad = document.getElementById("f-modalidad").value;
   const publico = document.getElementById("f-publico").value;
-  const desde = document.getElementById("f-desde").value ? new Date(document.getElementById("f-desde").value) : null;
-  const hasta = document.getElementById("f-hasta").value ? new Date(document.getElementById("f-hasta").value) : null;
+  const desde = document.getElementById("f-desde").value;
+  const hasta = document.getElementById("f-hasta").value;
 
-  const cont = document.getElementById("resultados-filtro");
-  cont.innerHTML = "";
+  const desdeD = desde ? new Date(desde) : null;
+  const hastaD = hasta ? new Date(hasta) : null;
 
-  const filtradas = DATA.filter(item => {
-    if (region && item["Región"] !== region) return false;
-    if (modalidad && item["Modalidad"] !== modalidad) return false;
+  const results = ALL_ACTIVITIES.filter(a => {
+    if (region && a["Región"] !== region) return false;
+    if (modalidad && a["Modalidad"] !== modalidad) return false;
+    if (publico && !a._publicos.includes(publico)) return false;
 
-    if (publico) {
-      const pubs = item["Público objetivo"] ? item["Público objetivo"].split(", ") : [];
-      if (!pubs.includes(publico)) return false;
-    }
-
-    const f = parseFechaDMY(item["Fecha de realización"]);
-    if (desde && f < desde) return false;
-    if (hasta && f > hasta) return false;
+    if (!a._fechaObj) return false;
+    if (desdeD && a._fechaObj < desdeD) return false;
+    if (hastaD && a._fechaObj > hastaD) return false;
 
     return true;
-  });
+  }).sort((a, b) => a._fechaObj - b._fechaObj);
 
-  if (!filtradas.length) {
-    cont.innerHTML = `<div class="sin-actividades">No hay actividades con esos filtros.</div>`;
-    return;
-  }
-
-  filtradas
-    .sort((a, b) =>
-      parseFechaDMY(a["Fecha de realización"]) -
-      parseFechaDMY(b["Fecha de realización"])
-    )
-    .forEach(item => {
-      cont.innerHTML += formatearActividad(item);
-    });
+  renderFilterResults(results);
 }
 
-function limpiarFiltros() {
+function clearFilters() {
+  document
+    .querySelectorAll("#filtros-cti select, #filtros-cti input")
+    .forEach(e => (e.value = ""));
   document.getElementById("resultados-filtro").innerHTML = "";
-  document.getElementById("f-region").value = "";
-  document.getElementById("f-modalidad").value = "";
-  document.getElementById("f-publico").value = "";
-  document.getElementById("f-desde").value = "";
-  document.getElementById("f-hasta").value = "";
 }
+
+/* =======================
+   RESULTADOS
+======================= */
+function renderFilterResults(list) {
+  const div = document.getElementById("resultados-filtro");
+  div.innerHTML = "<h2>📋 Resultados del filtro</h2>";
+
+  if (list
