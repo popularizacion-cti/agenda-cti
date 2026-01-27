@@ -1,3 +1,11 @@
+/* ===============================
+   🎛 VARIABLES GLOBALES
+   =============================== */
+:root {
+    --gap-fila-1: 48px;   /* separación entre fila 1 y fila 2 */
+}
+
+/* RESET */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -24,9 +32,12 @@ body {
     text-decoration: none;
 }
 
-/* TAMAÑOS DE TARJETAS */
+/* ===============================
+   TAMAÑOS DE TARJETAS
+   =============================== */
 .card-wide {
     grid-column: span 12;
+    margin-bottom: var(--gap-fila-1); /* 👈 separación especial */
 }
 
 .card-medium {
@@ -41,19 +52,34 @@ body {
     grid-column: span 3;
 }
 
-/* FLIP CARD BASE */
+/* ===============================
+   FLIP CARD BASE
+   =============================== */
 .flip-card {
     width: 100%;
-    height: 220px;
     perspective: 1000px;
     cursor: pointer;
 }
 
-.card-square .flip-card {
-    height: 180px;
+/* ===============================
+   ALTURAS POR TIPO
+   =============================== */
+.card-wide .flip-card {
+    height: 300px;   /* prueba: 260 / 300 / 340 */
 }
 
-/* ANIMACIÓN */
+.card-medium .flip-card,
+.card-small .flip-card {
+    height: 260px;
+}
+
+.card-square .flip-card {
+    height: 200px;
+}
+
+/* ===============================
+   ANIMACIÓN
+   =============================== */
 .flip-card-inner {
     width: 100%;
     height: 100%;
@@ -66,7 +92,9 @@ body {
     transform: rotateY(180deg);
 }
 
-/* CARAS */
+/* ===============================
+   CARAS
+   =============================== */
 .flip-card-front,
 .flip-card-back {
     position: absolute;
@@ -89,7 +117,9 @@ body {
     transform: rotateY(180deg);
 }
 
-/* OVERLAY */
+/* ===============================
+   OVERLAY
+   =============================== */
 .overlay {
     width: 100%;
     padding: 12px;
@@ -100,7 +130,9 @@ body {
     font-weight: bold;
 }
 
-/* RESPONSIVE */
+/* ===============================
+   RESPONSIVE
+   =============================== */
 @media (max-width: 900px) {
     .card-medium,
     .card-small {
@@ -110,27 +142,4 @@ body {
     .card-square {
         grid-column: span 6;
     }
-}
-
-/* ===============================
-   🎛 CONTROLES DE ALTURA (PRUEBAS)
-   =============================== */
-
-/* Rectángulo ancho (fila 1) */
-.card-wide .flip-card {
-    height: 300px;   /* 🔼 prueba: 260 / 300 / 340 */
-}
-
-/* Rectángulos medianos (fila 2 y 3) */
-.card-medium .flip-card {
-    height: 260px;   /* 🔼 prueba: 240 / 260 / 280 */
-}
-
-.card-small .flip-card {
-    height: 260px;   /* mantenlos iguales para balance */
-}
-
-/* Cuadrados (fila 4) */
-.card-square .flip-card {
-    height: 200px;   /* 🔼 prueba: 180 / 200 / 220 */
 }
