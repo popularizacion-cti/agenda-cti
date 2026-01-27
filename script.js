@@ -236,7 +236,7 @@ function buildCard(a) {
 
   let html = `
     <div class="fecha">${fecha}${hora ? " | " + hora : ""}</div>
-    <h3>${a["Nombre de la actividad"]}</h3>
+    <h3>${a["Nombre de la actividad"].toUpperCase()}</h3>
 
     <div class="institucion">
       ${a["Nombre de la entidad"]} · ${a["Región"]}
@@ -301,12 +301,6 @@ function buildCard(a) {
         ${a["Información adicional que se debe detallar en la agenda"]}
       </div>`;
   }
-
-  html += `
-    <div><strong>Contacto:</strong>
-      ${a["Nombres"]} ${a["Apellidos"]} – ${a["Correo electrónico"]}
-    </div>
-  `;
 
   div.innerHTML = html;
   return div;
