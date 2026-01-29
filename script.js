@@ -239,7 +239,7 @@ function buildCard(a) {
     <h3>${a["Nombre de la actividad"].toUpperCase()}</h3>
 
     <div class="institucion">
-      ${a["Nombre de la entidad"]} · ${a["Región"]}
+      ${a["Nombre de la entidad"].toUpperCase()} | ${a["Región"].toUpperCase()}
     </div>
 
     <p>${a["Resumen de la actividad"]}</p>
