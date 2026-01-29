@@ -242,9 +242,7 @@ function buildCard(a) {
       ${a["Nombre de la entidad"].toUpperCase()} | ${a["Región"].toUpperCase()}
     </div>
 
-    <p style="white-space: pre-line;">
-      ${a["Resumen de la actividad"]}
-    </p>
+    <p style="white-space: pre-line;">${a["Resumen de la actividad"]}</p>
 
     <div><strong>Público objetivo:</strong> ${a["Público objetivo"]}</div>
     <div><strong>Modalidad:</strong> ${a["Modalidad"]}</div>
