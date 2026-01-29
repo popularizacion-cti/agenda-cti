@@ -69,7 +69,7 @@ fetch(ENDPOINT)
   .then(r => r.json())
   .then(data => {
     ALL_ACTIVITIES = data
-      .filter(a => a["Aprobado"] === "Si" || a["Aprobado"] === "SI")
+      .filter(a => a["Aprobado"] === "Si" || a["Aprobado"] === "SI" || a["Aprobado"] === "si")
       .map(a => ({
         ...a,
         _fechaFiltro: parseFechaFiltro(a["Fecha de realización"]),
