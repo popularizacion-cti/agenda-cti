@@ -35,9 +35,8 @@ body {
 /* ===============================
    TAMAÑOS DE TARJETAS
    =============================== */
-.card-wide {
-    grid-column: span 12;
-    margin-bottom: var(--gap-fila-1); /* 👈 separación especial */
+.card-wide:first-of-type {
+    margin-bottom: var(--gap-fila-1);
 }
 
 .card-medium {
