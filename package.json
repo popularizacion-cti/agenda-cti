@@ -1,10 +1,106 @@
-{
-  "name": "agenda-cti-upop",
-  "version": "1.0.0",
-  "engines": {
-    "node": "18"
-  },
-  "dependencies": {
-    "googleapis": "^133.0.0"
-  }
+:root {
+  --primary-color: #1e6c93;
+  --secondary-color: #003366;
+  --bg-light: #f4f7f9;
+  --white: #ffffff;
+  --text-dark: #333;
+  --accent: #ffc107;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-dark);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.main-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+/* Imágenes Responsivas */
+.img-responsive {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.border-radius { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+/* Hero y Banners */
+.hero-section { background: var(--white); padding: 10px 0; border-bottom: 4px solid var(--primary-color); }
+.promo-banner { margin: 40px 0; }
+
+/* Tarjetas de Acción */
+.action-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: -30px; /* Efecto sobrepuesto opcional */
+  margin-bottom: 40px;
+}
+
+.card-action {
+  background: var(--white);
+  padding: 30px;
+  text-align: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border-top: 5px solid var(--primary-color);
+}
+
+.btn {
+  display: inline-block;
+  padding: 12px 25px;
+  background: var(--primary-color);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: bold;
+  transition: transform 0.2s;
+}
+.btn:hover { transform: scale(1.05); background: var(--secondary-color); }
+.btn-alt { background: var(--secondary-color); }
+
+/* Filtros */
+.filtros-grid {
+  background: var(--white);
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 30px;
+}
+
+.filtros-grid select, .filtros-grid input {
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  width: calc(33% - 20px);
+  min-width: 200px;
+}
+
+/* Actividades (Lista Vertical) */
+.actividad {
+  background: var(--white);
+  margin-bottom: 20px;
+  padding: 25px;
+  border-radius: 12px;
+  border-left: 8px solid var(--primary-color);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.actividad:hover { box-shadow: 0 8px 15px rgba(0,0,0,0.1); }
+
+.fecha { color: var(--primary-color); font-weight: bold; text-transform: uppercase; font-size: 0.9em; }
+.institucion { color: #666; font-size: 0.85em; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+.actividad h3 { color: var(--secondary-color); margin: 10px 0; font-size: 1.4em; }
+
+/* Footer */
+.footer { text-align: center; padding: 40px; background: #eee; margin-top: 50px; }
+
+.separator { border: 0; height: 1px; background: #ddd; margin: 40px 0; }
+
+@media (max-width: 600px) {
+  .filtros-grid select, .filtros-grid input { width: 100%; }
 }
