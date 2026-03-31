@@ -136,53 +136,54 @@
 </head>
 <body>
 
-  <header class="hero-header">
-    <div class="header-container">
-      <img src="graficas/11feb.png" alt="Día de la Mujer y la Niña en la Ciencia - 11 de Febrero" class="img-header">
-    </div>
-  </header>
-  
-  <section class="main-title-section">
-    <h1>Agenda PopCTI</h1>
-  </section>
-  
-  <main class="main-content">
+  <div class="dashboard-wrapper">
+    
+    <aside class="sidebar">
+      <div class="sidebar-content">
+        <div class="brand-container">
+          <img src="graficas/11feb.png" alt="Banner 11 de Febrero" class="sidebar-banner">
+          <h1>Agenda PopCTI</h1>
+        </div>
 
-    <section class="action-section">
-      <div class="action-grid">
-        
-        <div class="action-card">
-          <div class="action-icon">📅</div>
-          <h3>Descarga la Agenda</h3>
-          <p>Obtén el PDF con todas las efemérides y actividades del 2026.</p>
-          <a href="https://drive.google.com/file/d/1HAotCjWtFJhaWt1nmYDdunBeOxa_wkyW/view" target="_blank" class="btn btn-primary">Descargar PDF</a>
+        <div class="sidebar-actions">
+          <div class="sidebar-card">
+            <div class="icon-small">📅</div>
+            <h3>Descarga la Agenda</h3>
+            <p>PDF con efemérides 2026.</p>
+            <a href="https://drive.google.com/file/d/1HAotCjWtFJhaWt1nmYDdunBeOxa_wkyW/view" target="_blank" class="btn btn-sidebar">Descargar PDF</a>
+          </div>
+          
+          <div class="sidebar-card">
+            <div class="icon-small">📩</div>
+            <h3>Suscríbete</h3>
+            <p>Recibe actualizaciones.</p>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDd_ZqwPto_zZkG_mKSqBKLXFdGevqLPhKPw4GMUb5EqszRg/viewform" target="_blank" class="btn btn-sidebar-alt">Suscribirse aquí</a>
+          </div>
         </div>
-        
-        <div class="action-card">
-          <div class="action-icon">📩</div>
-          <h3>Suscríbete</h3>
-          <p>Recibe las actualizaciones de la Agenda PopCTI directamente en tu correo.</p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDd_ZqwPto_zZkG_mKSqBKLXFdGevqLPhKPw4GMUb5EqszRg/viewform" target="_blank" class="btn btn-secondary">Suscribirse aquí</a>
-        </div>
-        
+
+        <footer class="sidebar-footer">
+          <p>&copy; 2026 Concytec</p>
+        </footer>
       </div>
-    </section>
+    </aside>
 
-    <hr class="separator">
+    <main class="content-area">
+      
+      <section class="search-section">
+        <h2 class="section-title">🔎 Filtrar actividades</h2>
+        <div id="filtros-cti" class="filtros-dashboard">
+          </div>
+        <div id="resultados-filtro"></div>
+      </section>
 
-    <section class="search-container">
-      <h2>🔎 Filtrar actividades</h2>
-      <div id="filtros-cti" class="filtros-wrapper">
-        </div>
-      <div id="resultados-filtro"></div>
-    </section>
+      <section class="agenda-section">
+        <h2 class="section-title">Actividades de esta semana</h2>
+        <div id="agenda" class="vertical-list">Cargando actividades…</div>
+      </section>
 
-    <section class="weekly-container">
-      <h2>Actividades de esta semana</h2>
-      <div id="agenda" class="vertical-list">Cargando actividades…</div>
-    </section>
+    </main>
 
-  </main>
+  </div>
 
   <script src="script.js"></script>
 </body>
