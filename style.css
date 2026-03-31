@@ -54,8 +54,18 @@ body {
   border: 1px solid #e2e8f0;
 }
 
-.sidebar-card h3 { font-size: 0.9rem; margin: 4px 0; color: var(--accent-color); }
-.sidebar-card p { font-size: 0.75rem; color: #64748b; margin-bottom: 8px; }
+.sidebar-card h3 {
+  font-size: 1.3rem;
+  margin: 4px 0;
+  color: var(--accent-color);
+}
+
+.sidebar-card p {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-bottom: 8px;
+}
+
 .btn-sidebar {
   display: block;
   background: var(--accent-color);
