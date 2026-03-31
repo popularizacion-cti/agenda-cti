@@ -114,32 +114,34 @@ body {
 
 /* Estilo para los textos "Desde:" y "Hasta:" en la misma fila */
 .label-inline {
-  font-size: 1.05rem;
+  font-size: 0.9rem; /* Bajamos de 1.05 a 0.9 para ahorrar espacio */
   font-weight: 700;
-  margin: 0 4px;
+  margin: 0 2px;    /* Reducimos margen de 4px a 2px */
   color: var(--text-dark);
-  white-space: nowrap; /* Evita que el texto se parta en dos líneas */
-  align-self: center; /* Centra el texto verticalmente respecto a los inputs */
+  white-space: nowrap; 
+  align-self: center; 
 }
 
 /* Ajuste de los filtros para que quepan con los nuevos textos */
 .filtros-inline {
   display: flex;
-  gap: 10px; /* Espacio entre elementos */
+  gap: 5px; /* Reducimos el espacio entre elementos de 10px a 5px */
   align-items: center;
   flex-wrap: nowrap;
 }
 
 .filtros-inline select {
-  font-size: 1.05rem; /* Aumentado de 0.8rem a 1.05rem */
-  padding: 8px;      /* Un poco más de espacio interno para que no se vea apretado */
-  font-weight: 500;  /* Hace la letra un poco más definida */
+  font-size: 0.9rem; /* Bajamos de 1.05 a 0.9 para ganar ancho */
+  padding: 6px;      /* Compactamos el espacio interno de 8px a 6px */
+  font-weight: 500;
+  min-width: 0;      /* Permite que el navegador ajuste el ancho si es necesario */
 }
 
 .filtros-inline input[type="date"] {
-  font-size: 1.05rem; /* Aumentado de 0.8rem a 1.05rem */
-  padding: 8px;      /* Un poco más de espacio interno para que no se vea apretado */
-  font-weight: 500;  /* Hace la letra un poco más definida */
+  font-size: 0.9rem; /* Bajamos de 1.05 a 0.9 para ganar ancho */
+  padding: 6px;      /* Compactamos el espacio interno de 8px a 6px */
+  font-weight: 500;
+  min-width: 125px;  /* Aseguramos un mínimo para que la fecha sea legible */
 }
 
 .btn-container-center {
