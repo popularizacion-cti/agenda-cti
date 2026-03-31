@@ -54,6 +54,11 @@ body {
   border: 1px solid #e2e8f0;
 }
 
+.icon-small {
+  font-size: 2.5rem; /* Ajusta este valor según prefieras */
+  margin-bottom: 10px;
+}
+
 .sidebar-card h3 {
   font-size: 1.3rem;
   margin: 4px 0;
