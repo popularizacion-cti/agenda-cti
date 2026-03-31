@@ -180,8 +180,10 @@ function buildFilters(list) {
     <select id="f-region"><option value="">Región</option>${regiones.map(r => `<option>${r}</option>`).join("")}</select>
     <select id="f-modalidad"><option value="">Modalidad</option>${modalidades.map(m => `<option>${m}</option>`).join("")}</select>
     <select id="f-publico"><option value="">Público objetivo</option>${publicos.map(p => `<option>${p}</option>`).join("")}</select>
-    <input type="date" id="f-desde" title="Desde">
-    <input type="date" id="f-hasta" title="Hasta">
+    <span class="label-inline">Desde:</span>
+    <input type="date" id="f-desde">
+    <span class="label-inline">Hasta:</span>
+    <input type="date" id="f-hasta">
   `;
 
   // Insertar los botones centrados dentro del panel blanco
