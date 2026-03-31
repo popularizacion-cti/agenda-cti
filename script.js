@@ -135,38 +135,64 @@ function renderWeeklyAgenda(list) {
    FILTROS
 ======================= */
 
+// function buildFilters(list) {
+//   const div = document.getElementById("filtros-cti");
+
+//   const uniq = arr => [...new Set(arr)].filter(Boolean).sort();
+
+//   const regiones = uniq(list.map(a => a["Región"]));
+//   const modalidades = uniq(list.map(a => a["Modalidad"]));
+//   const publicos = uniq(list.flatMap(a => a._publicos));
+
+//   div.innerHTML = `
+//     <select id="f-region">
+//       <option value="">Región</option>
+//       ${regiones.map(r => `<option>${r}</option>`).join("")}
+//     </select>
+
+//     <select id="f-modalidad">
+//       <option value="">Modalidad</option>
+//       ${modalidades.map(m => `<option>${m}</option>`).join("")}
+//     </select>
+
+//     <select id="f-publico">
+//       <option value="">Público objetivo</option>
+//       ${publicos.map(p => `<option>${p}</option>`).join("")}
+//     </select>
+
+//     Desde: <input type="date" id="f-desde">
+//     Hasta: <input type="date" id="f-hasta">
+
+//     <br><br>
+//     <button onclick="applyFilters()">Filtrar</button>
+//     <button onclick="clearFilters()">Limpiar</button>
+//   `;
+// }
+
 function buildFilters(list) {
   const div = document.getElementById("filtros-cti");
-
   const uniq = arr => [...new Set(arr)].filter(Boolean).sort();
-
   const regiones = uniq(list.map(a => a["Región"]));
   const modalidades = uniq(list.map(a => a["Modalidad"]));
   const publicos = uniq(list.flatMap(a => a._publicos));
 
+  // Generamos los 5 campos en una sola línea
   div.innerHTML = `
-    <select id="f-region">
-      <option value="">Región</option>
-      ${regiones.map(r => `<option>${r}</option>`).join("")}
-    </select>
-
-    <select id="f-modalidad">
-      <option value="">Modalidad</option>
-      ${modalidades.map(m => `<option>${m}</option>`).join("")}
-    </select>
-
-    <select id="f-publico">
-      <option value="">Público objetivo</option>
-      ${publicos.map(p => `<option>${p}</option>`).join("")}
-    </select>
-
-    Desde: <input type="date" id="f-desde">
-    Hasta: <input type="date" id="f-hasta">
-
-    <br><br>
-    <button onclick="applyFilters()">Filtrar</button>
-    <button onclick="clearFilters()">Limpiar</button>
+    <select id="f-region"><option value="">Región</option>${regiones.map(r => `<option>${r}</option>`).join("")}</select>
+    <select id="f-modalidad"><option value="">Modalidad</option>${modalidades.map(m => `<option>${m}</option>`).join("")}</select>
+    <select id="f-publico"><option value="">Público objetivo</option>${publicos.map(p => `<option>${p}</option>`).join("")}</select>
+    <input type="date" id="f-desde" title="Desde">
+    <input type="date" id="f-hasta" title="Hasta">
   `;
+
+  // Creamos el contenedor de botones centrados debajo de los filtros
+  const btnContainer = document.createElement("div");
+  btnContainer.className = "btn-container-center";
+  btnContainer.innerHTML = `
+    <button class="btn-filter" onclick="applyFilters()">Filtrar</button>
+    <button class="btn-filter" style="background:#64748b" onclick="clearFilters()">Limpiar</button>
+  `;
+  div.parentNode.insertBefore(btnContainer, div.nextSibling);
 }
 
 function applyFilters() {
