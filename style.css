@@ -92,13 +92,13 @@ body {
 }
 
 .action-card h3 {
-  color: #003366; /* Azul oscuro para lectura sobre blanco */
+  color: #003366; /* Azul oscuro para que se lea sobre el blanco */
   margin: 0 0 15px;
   font-size: 1.6rem;
 }
 
 .action-card p {
-  color: #475569; /* Gris oscuro para lectura sobre blanco */
+  color: #475569; /* Gris oscuro para el texto descriptivo */
   margin-bottom: 25px;
   font-size: 1rem;
 }
@@ -167,14 +167,14 @@ body {
 }
 
 .fecha {
-  color: #1e6c93;
+  color: #1e6c93; /* La fecha en el azul institucional */
   font-weight: 700;
   text-transform: uppercase;
   font-size: 0.9rem;
 }
 
 .institucion {
-  color: #64748b;
+  color: #64748b; /* Nombre de la entidad en gris */
   font-size: 0.85rem;
   margin-bottom: 15px;
   border-bottom: 1px solid #f1f5f9;
@@ -182,13 +182,13 @@ body {
 }
 
 .actividad h3 {
-  color: #003366;
+  color: #003366; /* Título de la actividad en azul oscuro */
   margin: 10px 0;
   font-size: 1.5rem;
 }
 
 .actividad p {
-    color: #334155; /* Texto oscuro dentro de tarjetas blancas */
+  color: #334155; /* Resumen de la actividad en gris oscuro/negro */
 }
 
 /* Separador y Footer */
