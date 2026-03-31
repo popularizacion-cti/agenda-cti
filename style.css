@@ -128,6 +128,7 @@ body {
   gap: 5px; /* Reducimos el espacio entre elementos de 10px a 5px */
   align-items: center;
   flex-wrap: nowrap;
+  justify-content: center;
 }
 
 .filtros-inline select {
@@ -146,7 +147,17 @@ body {
 
 .btn-container-center {
   text-align: center;
-  padding-top: 8px;
+  margin-top: 15px; /* Un poco de espacio respecto a los filtros */
+  display: flex;    /* Usamos flex para control total */
+  justify-content: center; /* ESTO CENTRA LOS BOTONES */
+  gap: 10px;        /* Espacio entre Filtrar y Limpiar */
+}
+
+.control-panel {
+  padding: 15px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra todo el contenido del bloque blanco */
 }
 
 .btn-filter {
