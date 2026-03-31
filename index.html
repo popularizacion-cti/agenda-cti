@@ -142,7 +142,7 @@
       <div class="sidebar-content">
         <div class="brand-container">
           <img src="graficas/11feb.png" alt="Banner 11 de Febrero" class="sidebar-banner">
-          <h1>Agenda PopCTI</h1>
+          <h1 class="main-sidebar-title">Agenda PopCTI</h1>
         </div>
 
         <div class="sidebar-actions">
@@ -157,27 +157,26 @@
             <div class="icon-small">📩</div>
             <h3>Suscríbete</h3>
             <p>Recibe actualizaciones.</p>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDd_ZqwPto_zZkG_mKSqBKLXFdGevqLPhKPw4GMUb5EqszRg/viewform" target="_blank" class="btn btn-sidebar-alt">Suscribirse aquí</a>
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSfDd_ZqwPto_zZkG_mKSqBKLXFdGevqLPhKPw4GMUb5EqszRg/viewform" target="_blank" class="btn btn-sidebar">Suscribirse aquí</a>
           </div>
         </div>
-
-        <footer class="sidebar-footer">
-          <p>&copy; 2026 Concytec</p>
-        </footer>
       </div>
     </aside>
 
     <main class="content-area">
       
-      <section class="search-section">
-        <h2 class="section-title">🔎 Filtrar actividades</h2>
-        <div id="filtros-cti" class="filtros-dashboard">
+      <section class="control-panel">
+        <h2 class="mini-title">🔎 Filtrar actividades</h2>
+        <div id="filtros-cti" class="filtros-inline">
           </div>
-        <div id="resultados-filtro"></div>
+        
+        <div class="separator-line"></div>
+        
+        <h2 class="mini-title">📅 Actividades de esta semana</h2>
       </section>
 
-      <section class="agenda-section">
-        <h2 class="section-title">Actividades de esta semana</h2>
+      <section class="results-area">
+        <div id="resultados-filtro"></div>
         <div id="agenda" class="vertical-list">Cargando actividades…</div>
       </section>
 
