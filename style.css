@@ -4,7 +4,7 @@
   --card-bg: #ffffff;
   --text-dark: #1e293b;
   --text-light: #ffffff;
-  --accent-color: #003366;
+  --accent-color: #003366; /* El azul oscuro de los botones */
 }
 
 body {
@@ -13,18 +13,13 @@ body {
   color: var(--text-light);
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
 }
 
-/* --- LAYOUT PRINCIPAL --- */
-.dashboard-wrapper {
-  display: flex;
-  min-height: 100vh;
-}
+.dashboard-wrapper { display: flex; }
 
-/* --- SIDEBAR (IZQUIERDA - 1/3) --- */
+/* --- SIDEBAR (Ajustada a 3/4 del ancho anterior) --- */
 .sidebar {
-  width: 30%;
+  width: 22%; /* Más estrecha */
   background-color: var(--sidebar-bg);
   position: fixed;
   height: 100vh;
@@ -32,147 +27,132 @@ body {
   top: 0;
   box-shadow: 4px 0 10px rgba(0,0,0,0.1);
   color: var(--text-dark);
-  overflow-y: auto;
   z-index: 10;
 }
 
-.sidebar-content {
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  height: calc(100% - 60px);
-}
+.sidebar-content { padding: 15px; } /* Menos margen lateral */
 
 .sidebar-banner {
   width: 100%;
   height: auto;
-  border-radius: 8px;
-  margin-bottom: 20px;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
-.sidebar h1 {
+.main-sidebar-title {
   color: var(--primary-bg);
-  font-size: 2.2rem;
-  margin: 0 0 30px 0;
-  font-weight: 800;
+  font-size: 2.8rem; /* Más grande */
+  margin: 10px 0 25px 0;
+  font-weight: 900;
   text-align: center;
+  line-height: 1;
 }
 
-/* Tarjetas de la Sidebar */
 .sidebar-card {
   background: #f8fafc;
-  padding: 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
   text-align: center;
   border: 1px solid #e2e8f0;
 }
 
-.sidebar-card h3 {
-  font-size: 1.1rem;
-  margin: 10px 0;
-  color: var(--accent-color);
-}
+.sidebar-card h3 { font-size: 1rem; margin: 5px 0; color: var(--accent-color); }
+.sidebar-card p { font-size: 0.85rem; color: #64748b; margin-bottom: 10px; }
 
-.sidebar-card p {
-  font-size: 0.9rem;
-  color: #64748b;
-}
-
+/* Botones Sidebar unificados */
 .btn-sidebar {
   display: block;
-  background: var(--primary-bg);
+  background: var(--accent-color); /* Color azul oscuro unificado */
   color: white;
   text-decoration: none;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: 0.2s;
+  transition: opacity 0.2s;
 }
+.btn-sidebar:hover { opacity: 0.9; }
 
-.btn-sidebar:hover { background: var(--accent-color); }
-
-.btn-sidebar-alt {
-  display: block;
-  background: var(--accent-color);
-  color: white;
-  text-decoration: none;
-  padding: 10px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
-}
-
-/* --- AREA DE CONTENIDO (DERECHA - 2/3) --- */
+/* --- AREA DERECHA (Panel Compacto) --- */
 .content-area {
-  width: 70%;
-  margin-left: 30%; /* Deja el espacio de la sidebar fija */
-  padding: 40px;
+  width: 78%;
+  margin-left: 22%;
+  padding: 20px; /* Reducido para evitar espacios muertos */
   box-sizing: border-box;
 }
 
-.section-title {
-  font-size: 1.8rem;
-  margin-bottom: 25px;
-  border-bottom: 2px solid rgba(255,255,255,0.2);
-  padding-bottom: 10px;
-}
-
-/* Buscador y Resultados */
-.filtros-dashboard {
+.control-panel {
   background: var(--card-bg);
-  padding: 25px;
-  border-radius: 15px;
-  margin-bottom: 30px;
-  color: var(--text-dark); /* Texto oscuro en fondo blanco */
+  padding: 15px 20px;
+  border-radius: 12px;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.filtros-dashboard select, 
-.filtros-dashboard input {
-  padding: 10px;
-  border-radius: 6px;
+.mini-title {
+  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+  color: var(--accent-color);
+  font-weight: 700;
+}
+
+/* FILTROS EN UNA SOLA FILA */
+.filtros-inline {
+  display: flex;
+  flex-wrap: nowrap; /* Fuerza una sola fila */
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.filtros-inline select, 
+.filtros-inline input {
+  flex: 1;
+  padding: 8px;
+  font-size: 0.85rem;
   border: 1px solid #cbd5e1;
-  margin: 5px;
-  width: calc(33% - 15px);
+  border-radius: 4px;
 }
 
-/* TARJETAS DE ACTIVIDADES (Recuperando colores internos) */
+.btn-container-center {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.btn-filter {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 8px 25px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  margin: 0 5px;
+}
+
+.separator-line {
+  height: 1px;
+  background: #e2e8f0;
+  margin: 15px 0;
+}
+
+/* RESULTADOS (Sin cambios de color) */
 .actividad {
   background: var(--card-bg);
-  color: var(--text-dark); /* Forzamos texto oscuro */
+  color: var(--text-dark);
   padding: 25px;
   border-radius: 12px;
   margin-bottom: 20px;
   border-left: 10px solid var(--primary-bg);
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
-.actividad h3 { color: var(--accent-color); margin: 5px 0; }
-.actividad p { color: #334155; }
-.actividad strong { color: var(--accent-color); }
+.actividad h3 { color: var(--accent-color); }
 .fecha { color: var(--primary-bg); font-weight: 700; }
 .institucion { color: #64748b; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 10px; }
 
-.sidebar-footer {
-  margin-top: auto;
-  text-align: center;
-  font-size: 0.8rem;
-  color: #94a3b8;
-}
-
-/* RESPONSIVE: Si la pantalla es pequeña, se vuelve una sola columna */
-@media (max-width: 1024px) {
-  .dashboard-wrapper { flex-direction: column; }
-  .sidebar {
-    width: 100%;
-    position: relative;
-    height: auto;
-  }
-  .content-area {
-    width: 100%;
-    margin-left: 0;
-  }
-  .filtros-dashboard select, 
-  .filtros-dashboard input { width: 100%; margin: 5px 0; }
+@media (max-width: 1200px) {
+  .filtros-inline { flex-wrap: wrap; }
+  .filtros-inline select, .filtros-inline input { width: 48%; flex: none; }
 }
