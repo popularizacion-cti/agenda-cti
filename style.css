@@ -114,8 +114,9 @@ body {
 
 /* Estilo para los textos "Desde:" y "Hasta:" en la misma fila */
 .label-inline {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 4px;
   color: var(--text-dark);
   white-space: nowrap; /* Evita que el texto se parta en dos líneas */
   align-self: center; /* Centra el texto verticalmente respecto a los inputs */
@@ -130,13 +131,15 @@ body {
 }
 
 .filtros-inline select {
-  flex: 1.5; /* Los selectores de texto ocupan un poco más */
-  min-width: 120px;
+  font-size: 1.05rem; /* Aumentado de 0.8rem a 1.05rem */
+  padding: 8px;      /* Un poco más de espacio interno para que no se vea apretado */
+  font-weight: 500;  /* Hace la letra un poco más definida */
 }
 
 .filtros-inline input[type="date"] {
-  flex: 1; /* Las fechas ocupan un poco menos */
-  min-width: 130px;
+  font-size: 1.05rem; /* Aumentado de 0.8rem a 1.05rem */
+  padding: 8px;      /* Un poco más de espacio interno para que no se vea apretado */
+  font-weight: 500;  /* Hace la letra un poco más definida */
 }
 
 .btn-container-center {
