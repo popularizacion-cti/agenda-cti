@@ -4,7 +4,7 @@
   --card-bg: #ffffff;
   --text-dark: #1e293b;
   --text-light: #ffffff;
-  --accent-color: #003366; /* El azul oscuro de los botones */
+  --accent-color: #003366;
 }
 
 body {
@@ -12,14 +12,13 @@ body {
   background-color: var(--primary-bg);
   color: var(--text-light);
   margin: 0;
-  padding: 0;
 }
 
 .dashboard-wrapper { display: flex; }
 
-/* --- SIDEBAR (Ajustada a 3/4 del ancho anterior) --- */
+/* SIDEBAR IZQUIERDA */
 .sidebar {
-  width: 22%; /* Más estrecha */
+  width: 22%;
   background-color: var(--sidebar-bg);
   position: fixed;
   height: 100vh;
@@ -27,25 +26,25 @@ body {
   top: 0;
   box-shadow: 4px 0 10px rgba(0,0,0,0.1);
   color: var(--text-dark);
-  z-index: 10;
+  z-index: 100;
 }
 
-.sidebar-content { padding: 15px; } /* Menos margen lateral */
+.sidebar-content { padding: 15px; }
 
 .sidebar-banner {
   width: 100%;
   height: auto;
   border-radius: 4px;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .main-sidebar-title {
   color: var(--primary-bg);
-  font-size: 2.8rem; /* Más grande */
-  margin: 10px 0 25px 0;
+  font-size: 2.8rem;
+  margin: 10px 0 20px 0;
   font-weight: 900;
   text-align: center;
-  line-height: 1;
+  line-height: 0.9;
 }
 
 .sidebar-card {
@@ -60,26 +59,33 @@ body {
 .sidebar-card h3 { font-size: 1rem; margin: 5px 0; color: var(--accent-color); }
 .sidebar-card p { font-size: 0.85rem; color: #64748b; margin-bottom: 10px; }
 
-/* Botones Sidebar unificados */
 .btn-sidebar {
   display: block;
-  background: var(--accent-color); /* Color azul oscuro unificado */
+  background: var(--accent-color);
   color: white;
   text-decoration: none;
   padding: 10px;
   border-radius: 6px;
   font-weight: 600;
   font-size: 0.9rem;
-  transition: opacity 0.2s;
+  transition: transform 0.2s;
 }
-.btn-sidebar:hover { opacity: 0.9; }
+.btn-sidebar:hover { transform: scale(1.02); }
 
-/* --- AREA DERECHA (Panel Compacto) --- */
+/* ÁREA DERECHA Y HEADER PEGAJOSO */
 .content-area {
   width: 78%;
   margin-left: 22%;
-  padding: 20px; /* Reducido para evitar espacios muertos */
+  padding: 20px;
   box-sizing: border-box;
+}
+
+/* --- CLAVE: PANEL ESTÁTICO --- */
+.sticky-header-right {
+  position: sticky;
+  top: 10px; /* Margen superior cuando se queda pegado */
+  z-index: 90;
+  margin-bottom: 20px;
 }
 
 .control-panel {
@@ -87,8 +93,7 @@ body {
   padding: 15px 20px;
   border-radius: 12px;
   color: var(--text-dark);
-  margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
 }
 
 .mini-title {
@@ -98,39 +103,41 @@ body {
   font-weight: 700;
 }
 
-/* FILTROS EN UNA SOLA FILA */
+/* FILTROS EN UNA LÍNEA */
 .filtros-inline {
   display: flex;
-  flex-wrap: nowrap; /* Fuerza una sola fila */
   gap: 8px;
   align-items: center;
-  margin-bottom: 10px;
 }
 
 .filtros-inline select, 
 .filtros-inline input {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   font-size: 0.85rem;
   border: 1px solid #cbd5e1;
-  border-radius: 4px;
+  border-radius: 6px;
+  background: #fff;
+  color: #334155;
 }
 
 .btn-container-center {
   text-align: center;
-  margin-top: 10px;
+  padding-top: 15px;
 }
 
 .btn-filter {
   background: var(--accent-color);
   color: white;
   border: none;
-  padding: 8px 25px;
+  padding: 10px 30px;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   margin: 0 5px;
+  transition: opacity 0.2s;
 }
+.btn-filter:hover { opacity: 0.9; }
 
 .separator-line {
   height: 1px;
@@ -138,21 +145,25 @@ body {
   margin: 15px 0;
 }
 
-/* RESULTADOS (Sin cambios de color) */
+/* TARJETAS DE RESULTADOS */
 .actividad {
   background: var(--card-bg);
   color: var(--text-dark);
   padding: 25px;
   border-radius: 12px;
   margin-bottom: 20px;
-  border-left: 10px solid var(--primary-bg);
+  border-left: 12px solid var(--primary-bg);
 }
 
-.actividad h3 { color: var(--accent-color); }
-.fecha { color: var(--primary-bg); font-weight: 700; }
-.institucion { color: #64748b; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 10px; }
+.actividad h3 { color: var(--accent-color); margin: 0 0 10px 0; }
+.actividad strong { color: var(--accent-color); }
+.fecha { color: var(--primary-bg); font-weight: 800; font-size: 0.95rem; }
+.institucion { color: #64748b; font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 5px; margin-bottom: 15px; }
 
-@media (max-width: 1200px) {
+@media (max-width: 1024px) {
+  .sticky-header-right { position: relative; top: 0; }
+  .sidebar { width: 30%; }
+  .content-area { width: 70%; margin-left: 30%; }
   .filtros-inline { flex-wrap: wrap; }
-  .filtros-inline select, .filtros-inline input { width: 48%; flex: none; }
+  .filtros-inline select, .filtros-inline input { width: 45%; flex: none; }
 }
