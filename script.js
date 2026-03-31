@@ -131,43 +131,9 @@ function renderWeeklyAgenda(list) {
   semanal.forEach(a => cont.appendChild(buildCard(a)));
 }
 
-/* =======================
+/* ======================
    FILTROS
 ======================= */
-
-// function buildFilters(list) {
-//   const div = document.getElementById("filtros-cti");
-
-//   const uniq = arr => [...new Set(arr)].filter(Boolean).sort();
-
-//   const regiones = uniq(list.map(a => a["Región"]));
-//   const modalidades = uniq(list.map(a => a["Modalidad"]));
-//   const publicos = uniq(list.flatMap(a => a._publicos));
-
-//   div.innerHTML = `
-//     <select id="f-region">
-//       <option value="">Región</option>
-//       ${regiones.map(r => `<option>${r}</option>`).join("")}
-//     </select>
-
-//     <select id="f-modalidad">
-//       <option value="">Modalidad</option>
-//       ${modalidades.map(m => `<option>${m}</option>`).join("")}
-//     </select>
-
-//     <select id="f-publico">
-//       <option value="">Público objetivo</option>
-//       ${publicos.map(p => `<option>${p}</option>`).join("")}
-//     </select>
-
-//     Desde: <input type="date" id="f-desde">
-//     Hasta: <input type="date" id="f-hasta">
-
-//     <br><br>
-//     <button onclick="applyFilters()">Filtrar</button>
-//     <button onclick="clearFilters()">Limpiar</button>
-//   `;
-// }
 
 function buildFilters(list) {
   const div = document.getElementById("filtros-cti");
