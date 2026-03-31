@@ -25,14 +25,38 @@ body {
 }
 
 .header-container {
-  max-width: 1600px;
+  max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
 }
 
 .img-header {
-  width: 100%;
+  width: 75%;
   height: auto;
   display: block;
+}
+
+/* --- ESTILO DEL TÍTULO NUEVO --- */
+.main-title-section {
+  text-align: center;
+  padding: 40px 20px 10px;
+}
+
+.main-title-section h1 {
+  color: var(--primary-color);
+  font-size: 3rem;
+  margin: 0;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+}
+
+.main-title-section .subtitle {
+  color: var(--secondary-color);
+  font-size: 1.1rem;
+  margin-top: 5px;
+  font-weight: 500;
 }
 
 /* Estenedores principales */
