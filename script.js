@@ -176,7 +176,6 @@ function buildFilters(list) {
   const modalidades = uniq(list.map(a => a["Modalidad"]));
   const publicos = uniq(list.flatMap(a => a._publicos));
 
-  // Generamos los 5 campos en una sola línea
   div.innerHTML = `
     <select id="f-region"><option value="">Región</option>${regiones.map(r => `<option>${r}</option>`).join("")}</select>
     <select id="f-modalidad"><option value="">Modalidad</option>${modalidades.map(m => `<option>${m}</option>`).join("")}</select>
@@ -185,14 +184,17 @@ function buildFilters(list) {
     <input type="date" id="f-hasta" title="Hasta">
   `;
 
-  // Creamos el contenedor de botones centrados debajo de los filtros
-  const btnContainer = document.createElement("div");
-  btnContainer.className = "btn-container-center";
+  // Insertar los botones centrados dentro del panel blanco
+  let btnContainer = document.querySelector(".btn-container-center");
+  if (!btnContainer) {
+    btnContainer = document.createElement("div");
+    btnContainer.className = "btn-container-center";
+    div.parentNode.appendChild(btnContainer);
+  }
   btnContainer.innerHTML = `
     <button class="btn-filter" onclick="applyFilters()">Filtrar</button>
     <button class="btn-filter" style="background:#64748b" onclick="clearFilters()">Limpiar</button>
   `;
-  div.parentNode.insertBefore(btnContainer, div.nextSibling);
 }
 
 function applyFilters() {
