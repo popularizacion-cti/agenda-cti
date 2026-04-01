@@ -246,3 +246,68 @@ body {
   .filtros-inline { flex-wrap: wrap; }
   .filtros-inline select { width: 48%; }
 }
+
+/* ===================================================
+   PARCHE PARA CELULARES (No afecta PC ni Tablet)
+   =================================================== */
+@media (max-width: 768px) {
+  
+  /* 1. Cambiamos el diseño de 2 columnas a 1 sola columna */
+  .dashboard-wrapper {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  /* 2. La Sidebar deja de estar pegada a la izquierda y se pone arriba */
+  .sidebar {
+    width: 100%;
+    position: relative; /* Ya no flota, ahora ocupa su espacio arriba */
+    height: auto;
+    box-shadow: none;
+    border-bottom: 5px solid var(--primary-bg);
+  }
+
+  /* 3. El contenido derecho ya no necesita el margen de 22% */
+  .content-area {
+    width: 100%;
+    margin-left: 0; 
+    padding: 10px;
+  }
+
+  /* 4. El panel de filtros ya no debe ser estático (taparía todo el celular) */
+  .header-fixed-right {
+    position: relative;
+    top: 0;
+  }
+
+  /* 5. Los 5 filtros se apilan uno debajo de otro para poder tocarlos bien */
+  .filtros-inline {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .filtros-inline select, 
+  .filtros-inline input {
+    width: 100%; /* Ocupan todo el ancho del teléfono */
+    font-size: 1.1rem; /* Letra un poco más grande para dedos */
+  }
+
+  /* 6. Ajustamos el título gigante para que quepa en el celular */
+  .main-sidebar-title {
+    font-size: 2rem;
+  }
+
+  /* 7. Quitamos el bloqueo de scroll del body para que Sites fluya */
+  body {
+    overflow: auto;
+    height: auto;
+  }
+
+  /* 8. Los resultados ya no tienen su propio scroll interno, 
+        ahora todo el celular hace scroll parejo */
+  .results-scroll-area {
+    overflow-y: visible;
+    height: auto;
+  }
+}
