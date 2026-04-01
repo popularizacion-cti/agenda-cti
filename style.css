@@ -248,66 +248,83 @@ body {
 }
 
 /* ===================================================
-   PARCHE PARA CELULARES (No afecta PC ni Tablet)
+   PARCHE EXCLUSIVO PARA TELÉFONOS (No afecta Tablet ni PC)
    =================================================== */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   
-  /* 1. Cambiamos el diseño de 2 columnas a 1 sola columna */
+  /* 1. Quitamos el diseño de columnas y apilamos todo */
   .dashboard-wrapper {
     flex-direction: column;
     height: auto;
-    overflow-y: auto;
+    display: block; /* Forzamos flujo vertical simple */
   }
 
-  /* 2. La Sidebar deja de estar pegada a la izquierda y se pone arriba */
+  /* 2. La Sidebar se vuelve un bloque normal arriba */
   .sidebar {
-    width: 100%;
-    position: relative; /* Ya no flota, ahora ocupa su espacio arriba */
-    height: auto;
+    width: 100% !important;
+    position: relative !important;
+    height: auto !important;
     box-shadow: none;
-    border-bottom: 5px solid var(--primary-bg);
+    border-bottom: 3px solid var(--primary-bg);
   }
 
-  /* 3. El contenido derecho ya no necesita el margen de 22% */
-  .content-area {
-    width: 100%;
-    margin-left: 0; 
+  .sidebar-content {
     padding: 10px;
   }
 
-  /* 4. El panel de filtros ya no debe ser estático (taparía todo el celular) */
-  .header-fixed-right {
-    position: relative;
-    top: 0;
+  /* 3. El contenido derecho ocupa todo el ancho sin márgenes */
+  .content-area {
+    width: 100% !important;
+    margin-left: 0 !important; 
+    padding: 10px !important;
+    height: auto !important;
   }
 
-  /* 5. Los 5 filtros se apilan uno debajo de otro para poder tocarlos bien */
+  /* 4. Desactivamos el "pegajoso" para que no tape la pantalla del cel */
+  .header-fixed-right {
+    position: relative !important;
+    top: 0 !important;
+    background-color: transparent;
+  }
+
+  /* 5. Filtros en lista vertical (uno por fila) */
   .filtros-inline {
-    flex-direction: column;
-    gap: 10px;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100%;
   }
 
   .filtros-inline select, 
-  .filtros-inline input {
-    width: 100%; /* Ocupan todo el ancho del teléfono */
-    font-size: 1.1rem; /* Letra un poco más grande para dedos */
+  .filtros-inline input,
+  .label-inline {
+    width: 100% !important;
+    margin: 5px 0 !important;
+    font-size: 1rem !important;
+    display: block;
   }
 
-  /* 6. Ajustamos el título gigante para que quepa en el celular */
+  /* 6. Título más pequeño para que no rompa el diseño */
   .main-sidebar-title {
-    font-size: 2rem;
+    font-size: 1.8rem !important;
   }
 
-  /* 7. Quitamos el bloqueo de scroll del body para que Sites fluya */
+  /* 7. Liberamos el scroll para que Google Sites lo maneje bien */
   body {
-    overflow: auto;
-    height: auto;
+    overflow: auto !important;
+    height: auto !important;
   }
 
-  /* 8. Los resultados ya no tienen su propio scroll interno, 
-        ahora todo el celular hace scroll parejo */
   .results-scroll-area {
-    overflow-y: visible;
-    height: auto;
+    overflow-y: visible !important;
+    height: auto !important;
+  }
+
+  /* 8. Ajuste de las tarjetas de actividad para pantallas angostas */
+  .actividad {
+    padding: 15px !important;
+  }
+  
+  .actividad h3 {
+    font-size: 1.1rem !important;
   }
 }
