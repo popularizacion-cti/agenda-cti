@@ -248,67 +248,97 @@ body {
 }
 
 /* ===================================================
-   PARCHE EXCLUSIVO PARA TELÉFONOS (No afecta Tablet ni PC)
+   PARCHE EXCLUSIVO PARA TELÉFONOS (Ajuste de ancho 95%)
    =================================================== */
 @media (max-width: 480px) {
   
-  /* 1. Quitamos el diseño de columnas y apilamos todo */
+  /* 1. Reset total del contenedor para flujo vertical */
   .dashboard-wrapper {
-    flex-direction: column;
-    height: auto;
-    display: block; /* Forzamos flujo vertical simple */
+    flex-direction: column !important;
+    height: auto !important;
+    display: block !important;
   }
 
-  /* 2. La Sidebar se vuelve un bloque normal arriba */
+  /* 2. Sidebar arriba ocupando todo el ancho */
   .sidebar {
     width: 100% !important;
     position: relative !important;
     height: auto !important;
-    box-shadow: none;
+    box-shadow: none !important;
     border-bottom: 3px solid var(--primary-bg);
   }
 
   .sidebar-content {
-    padding: 10px;
+    padding: 15px 10px !important;
   }
 
-  /* 3. El contenido derecho ocupa todo el ancho sin márgenes */
+  /* 3. Área de contenido expandida al máximo */
   .content-area {
     width: 100% !important;
     margin-left: 0 !important; 
-    padding: 10px !important;
+    padding: 15px 5px !important; /* Mínimo espacio lateral */
     height: auto !important;
+    box-sizing: border-box;
   }
 
-  /* 4. Desactivamos el "pegajoso" para que no tape la pantalla del cel */
+  /* 4. Panel de control (Buscador) aprovechando el ancho */
   .header-fixed-right {
     position: relative !important;
     top: 0 !important;
-    background-color: transparent;
+    width: 100% !important;
   }
 
-  /* 5. Filtros en lista vertical (uno por fila) */
+  .control-panel {
+    width: 95% !important; /* Ocupa el 95% del ancho del celular */
+    margin: 0 auto 20px auto !important;
+    padding: 15px 10px !important;
+    box-sizing: border-box;
+  }
+
+  /* 5. Filtros apilados y anchos */
   .filtros-inline {
     flex-direction: column !important;
-    gap: 10px !important;
-    width: 100%;
+    gap: 8px !important;
   }
 
   .filtros-inline select, 
-  .filtros-inline input,
-  .label-inline {
+  .filtros-inline input {
     width: 100% !important;
-    margin: 5px 0 !important;
+    margin: 0 !important;
     font-size: 1rem !important;
-    display: block;
+    box-sizing: border-box;
   }
 
-  /* 6. Título más pequeño para que no rompa el diseño */
+  .label-inline {
+    display: block !important;
+    margin: 5px 0 !important;
+    text-align: left;
+  }
+
+  /* 6. Contenedor de resultados expandido */
+  .results-container {
+    width: 95% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+  }
+
+  .actividad {
+    width: 100% !important;
+    padding: 15px !important;
+    margin-bottom: 15px !important;
+    box-sizing: border-box;
+  }
+
+  /* 7. Ajustes de fuentes para legibilidad */
   .main-sidebar-title {
     font-size: 1.8rem !important;
   }
 
-  /* 7. Liberamos el scroll para que Google Sites lo maneje bien */
+  .actividad h3 {
+    font-size: 1.2rem !important; /* Un poquito más grande para mejor lectura */
+  }
+
+  /* 8. Liberación de scrolls para Google Sites */
   body {
     overflow: auto !important;
     height: auto !important;
@@ -317,14 +347,6 @@ body {
   .results-scroll-area {
     overflow-y: visible !important;
     height: auto !important;
-  }
-
-  /* 8. Ajuste de las tarjetas de actividad para pantallas angostas */
-  .actividad {
-    padding: 15px !important;
-  }
-  
-  .actividad h3 {
-    font-size: 1.1rem !important;
+    padding: 0 !important;
   }
 }
