@@ -212,6 +212,12 @@ body {
 .results-scroll-area::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
 .results-scroll-area::-webkit-scrollbar-thumb { background: var(--accent-color); border-radius: 5px; }
 
+#agenda .actividad[style*="border-left-color: #ffc107"] {
+  background-color: #fffbeb;
+  color: #92400e;
+  font-weight: 600;
+}
+
 @media (max-width: 1100px) {
   .sidebar { width: 25%; }
   .right-area { width: 75%; }
