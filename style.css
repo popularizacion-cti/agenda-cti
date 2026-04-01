@@ -202,10 +202,32 @@ body {
   border-left: 10px solid #003366;
 }
 
-.actividad h3 { color: var(--accent-color); margin: 0 0 8px 0; font-size: 1.3rem; }
-.fecha { color: #1e6c93; font-weight: 800; font-size: 0.9rem; }
-.institucion { color: #64748b; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 10px; }
-.actividad p { font-size: 0.95rem; line-height: 1.4; }
+.actividad h3 {
+  color: var(--accent-color);
+  margin: 0 0 8px 0;
+  font-size: 1.3rem;
+}
+
+.fecha {
+  color: #1e6c93;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+.institucion {
+  color: #475569;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 5px;
+  margin-bottom: 15px;
+}
+
+.actividad p {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
 
 /* Estilo para la barra de scroll */
 .results-scroll-area::-webkit-scrollbar { width: 10px; }
