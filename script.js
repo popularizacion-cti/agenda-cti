@@ -203,17 +203,39 @@ function f(id) {
    RESULTADOS FILTRO
 ======================= */
 
+// function renderFilterResults(list) {
+//   const div = document.getElementById("resultados-filtro");
+//   div.innerHTML = "<h2>📋 Resultados del filtro</h2>";
+
+//   if (!list.length) {
+//     div.innerHTML +=
+//       `<div class="sin-actividades">No se encontraron actividades.</div>`;
+//     return;
+//   }
+
+//   list.forEach(a => div.appendChild(buildCard(a)));
+// }
+
 function renderFilterResults(list) {
   const div = document.getElementById("resultados-filtro");
-  div.innerHTML = "<h2>📋 Resultados del filtro</h2>";
+  
+  // Si no hay lista (limpieza), vaciamos y salimos
+  if (!list) {
+    div.innerHTML = "";
+    return;
+  }
+
+  div.innerHTML = "<h2 class='section-label' style='margin-top:30px;'>📋 Resultados del filtro</h2>";
 
   if (!list.length) {
-    div.innerHTML +=
-      `<div class="sin-actividades">No se encontraron actividades.</div>`;
+    div.innerHTML += `<div class="actividad" style="border-left-color: #ffc107;">No se encontraron actividades para los criterios seleccionados.</div>`;
     return;
   }
 
   list.forEach(a => div.appendChild(buildCard(a)));
+  
+  // Opcional: Hacer scroll automático hacia los resultados
+  div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* =======================
