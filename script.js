@@ -422,23 +422,27 @@ fetch(ENDPOINT)
 ======================= */
 function ordenarPorFechaYHora(lista) {
   return lista.sort((a, b) => {
-    // Primero comparamos la fecha
+    // 1. Comparar fechas (Prioridad 1)
     if (a._fechaFiltro.getTime() !== b._fechaFiltro.getTime()) {
       return a._fechaFiltro - b._fechaFiltro;
     }
     
-    // Si la fecha es igual, aplicamos artificio decimal para la hora
-    const obtenerDecimal = (h) => {
-      if (!h) return 0;
-      // Toma "09:00", quita el ":" y lo vuelve "09.00", luego a número
-      const inicio = h.split("-")[0].trim().replace(":", ".");
-      return parseFloat(inicio) || 0;
+    // 2. Comparar horas (Prioridad 2 - Tu artificio decimal)
+    const convertirADecimal = (textoHora) => {
+      if (!textoHora || typeof textoHora !== 'string') return 0;
+      
+      // Tomamos solo la parte inicial (antes del guion si lo hay)
+      // "09:30 - 11:00" -> "09:30"
+      const soloHora = textoHora.split("-")[0].trim();
+      
+      // Reemplazamos ":" por "." -> "09.30" y convertimos a número -> 9.3
+      return parseFloat(soloHora.replace(":", ".")) || 0;
     };
 
-    const horaA = obtenerDecimal(a["Hora de INICIO"]);
-    const horaB = obtenerDecimal(b["Hora de INICIO"]);
+    const numA = convertirADecimal(a["Hora de INICIO"]);
+    const numB = convertirADecimal(b["Hora de INICIO"]);
 
-    return horaA - horaB;
+    return numA - numB;
   });
 }
 
