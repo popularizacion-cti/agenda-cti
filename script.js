@@ -239,7 +239,7 @@ function renderFilterResults(list) {
   list.forEach(a => div.appendChild(buildCard(a)));
   
   // Opcional: Hacer scroll automático hacia los resultados
-  div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* =======================
