@@ -5,6 +5,7 @@
   --text-dark: #1e293b;
   --accent-color: #003366;
   --secondary-bg: #E0DCD1;
+  --third-bg: #EEE7DD;
 }
 
 html {
@@ -28,7 +29,7 @@ body {
 /* --- SECCIÓN IZQUIERDA --- */
 .sidebar {
   width: 20%;
-  background-color: var(--sidebar-bg);
+  background-color: var(--third-bg);
   height: 100vh;
   box-shadow: 4px 0 15px rgba(0,0,0,0.2);
   z-index: 100;
