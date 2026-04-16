@@ -189,7 +189,7 @@ body {
 .section-label {
   font-size: 1.1rem;
   margin-bottom: 15px;
-  color: white;
+  color: black;
   border-left: 4px solid var(--text-dark);
   padding-left: 10px;
 }
