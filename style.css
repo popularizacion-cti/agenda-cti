@@ -86,7 +86,7 @@ body {
 
 /* --- ÁREA DERECHA --- */
 .right-area {
-  max-width: 1200px;
+  width: 80%;
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -95,7 +95,7 @@ body {
 /* SECCIÓN ARRIBA DERECHA (BUSCADOR FIJO) */
 .top-search-bar {
   padding: 15px 20px 5px 20px;
-  background-color: var(--primary-bg);
+  background-color: var(--secondary-bg);
   flex-shrink: 0; /* No permite que se encoja */
 }
 
