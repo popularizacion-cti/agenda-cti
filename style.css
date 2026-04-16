@@ -190,7 +190,7 @@ body {
   font-size: 1.1rem;
   margin-bottom: 15px;
   color: white;
-  border-left: 4px solid var(--accent-color);
+  border-left: 4px solid var(--text-dark);
   padding-left: 10px;
 }
 
