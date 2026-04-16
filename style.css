@@ -84,7 +84,7 @@ body {
 
 /* --- ÁREA DERECHA --- */
 .right-area {
-  width: 80%;
+  max-width: 1200px;
   display: flex;
   flex-direction: column;
   height: 100vh;
