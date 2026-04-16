@@ -40,7 +40,7 @@ body {
 .sidebar-banner { width: 100%; height: auto; border-radius: 4px; }
 .main-sidebar-title {
   color: var(--primary-bg);
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   margin: 10px 0;
   font-weight: 900;
   text-align: center;
