@@ -1,9 +1,10 @@
 :root {
-  --primary-bg: #E0DCD1;
+  --primary-bg: #1e6c93;
   --sidebar-bg: #ffffff;
   --card-bg: #ffffff;
   --text-dark: #1e293b;
   --accent-color: #003366;
+  --secondary-bg: #E0DCD1;
 }
 
 html {
@@ -13,7 +14,7 @@ html {
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
-  background-color: var(--primary-bg);
+  background-color: var(--secondary-bg);
   margin: 0;
   overflow: hidden; /* El body no hace scroll, lo hace el contenedor de resultados */
 }
