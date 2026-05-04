@@ -23,12 +23,12 @@ body {
 .dashboard-wrapper {
   display: flex;
   height: 100vh;
-  width: 200vw;
+  width: 100vw;
 }
 
 /* --- SECCIÓN IZQUIERDA --- */
 .sidebar {
-  width: 240px;
+  width: 340px;
   background-color: var(--third-bg);
   height: 100vh;
   box-shadow: 4px 0 15px rgba(0,0,0,0.2);
