@@ -309,12 +309,29 @@ function buildCard(a) {
   }
 
   if (a["Enlace para más información"]) {
-    html += `
-      <div><strong>Más información:</strong>
-        <a href="${a["Enlace para más información"]}" target="_blank">
-          ${a["Enlace para más información"]}
-        </a>
-      </div>`;
+    const links = a["Enlace para más información"].split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+
+    if (links.length === 1) {
+      html += `
+        <div><strong>Más información:</strong> 
+          <a href="${links[0]}" target="_blank" style="word-break: break-all;">
+            ${links[0]}
+          </a>
+        </div>`;
+    } else if (links.length > 1) {
+      html += `<div><strong>Más información:</strong>`;
+      
+      links.forEach(link => {
+        html += `
+          <div style="margin-top: 5px; margin-left: 15px;">
+            <a href="${link}" target="_blank" style="word-break: break-all;">
+              ${link}
+            </a>
+          </div>`;
+      });
+
+      html += `</div>`;
+    }
   }
 
   if (a["Información adicional que se debe detallar en la agenda"]) {
