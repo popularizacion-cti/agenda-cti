@@ -92,22 +92,23 @@ fetch(ENDPOINT)
 ======================= */
 function ordenarPorFechaYHora(lista) {
   return lista.sort((a, b) => {
-    // Primero comparamos la fecha
+    
     if (a._fechaFiltro.getTime() !== b._fechaFiltro.getTime()) {
       return a._fechaFiltro - b._fechaFiltro;
     }
-    
-    // Si la fecha es igual, aplicamos tu artificio decimal para la hora
+
     const obtenerDecimal = (h) => {
       if (!h) return 0;
-      // Toma "09:00", quita el ":" y lo vuelve "09.00", luego a número
-      const inicio = h.split("-")[0].trim().replace(":", ".");
+      
+      const horaLimpia = limpiarHora(h);
+      if (!horaLimpia) return 0;
+
+      const inicio = horaLimpia.split("-")[0].trim().replace(":", ".");
       return parseFloat(inicio) || 0;
     };
 
     const horaA = obtenerDecimal(a["Hora de INICIO"]);
     const horaB = obtenerDecimal(b["Hora de INICIO"]);
-
     return horaA - horaB;
   });
 }
@@ -134,14 +135,13 @@ function renderWeeklyAgenda(list) {
   // no mostrar días pasados
   const inicioVisible = hoy > lunes ? hoy : lunes;
 
-  const semanal = list
-    .filter(
+  const semanal = list.filter(
       a =>
         a._fechaFiltro &&
         a._fechaFiltro >= inicioVisible &&
         a._fechaFiltro <= domingo
-    )
-    .sort((a, b) => a._fechaFiltro - b._fechaFiltro);
+    );
+  ordenarPorFechaYHora(semanal);
 
   if (!semanal.length) {
     cont.innerHTML =
@@ -206,7 +206,7 @@ function applyFilters() {
     return true;
   });
 
-  renderFilterResults(res.sort((a, b) => a._fechaFiltro - b._fechaFiltro));
+  renderFilterResults(ordenarPorFechaYHora(res));
 }
 
 function clearFilters() {
