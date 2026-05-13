@@ -92,23 +92,29 @@ fetch(ENDPOINT)
 ======================= */
 function ordenarPorFechaYHora(lista) {
   return lista.sort((a, b) => {
-    
+    // 1. Primero comparamos la fecha
     if (a._fechaFiltro.getTime() !== b._fechaFiltro.getTime()) {
       return a._fechaFiltro - b._fechaFiltro;
     }
-
+    
+    // 2. Si la fecha es igual, aplicamos el artificio decimal para la hora
     const obtenerDecimal = (h) => {
       if (!h) return 0;
       
+      // ¡AQUÍ ESTÁ LA MAGIA! Pasamos el valor crudo por tu función limpiadora primero
       const horaLimpia = limpiarHora(h);
       if (!horaLimpia) return 0;
 
+      // Ahora sí, horaLimpia es un formato amigable como "09:30".
+      // Reemplazamos los dos puntos por un punto para volverlo decimal (ej. "09.30")
       const inicio = horaLimpia.split("-")[0].trim().replace(":", ".");
       return parseFloat(inicio) || 0;
     };
 
     const horaA = obtenerDecimal(a["Hora de INICIO"]);
     const horaB = obtenerDecimal(b["Hora de INICIO"]);
+
+    // 3. Comparamos los números (ej. 9.30 vs 14.00)
     return horaA - horaB;
   });
 }
