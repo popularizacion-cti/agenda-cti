@@ -212,6 +212,9 @@ function applyFilters() {
     return true;
   });
 
+  document.getElementById("titulo-semana").style.display = "none";
+  document.getElementById("agenda").style.display = "none";
+
   renderFilterResults(ordenarPorFechaYHora(res));
 }
 
@@ -220,6 +223,8 @@ function clearFilters() {
     .querySelectorAll("#filtros-cti select, #filtros-cti input")
     .forEach(e => (e.value = ""));
   document.getElementById("resultados-filtro").innerHTML = "";
+  document.getElementById("titulo-semana").style.display = "block";
+  document.getElementById("agenda").style.display = "block";
 }
 
 function f(id) {
