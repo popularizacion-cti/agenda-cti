@@ -4,8 +4,8 @@
   --card-bg: #ffffff;
   --text-dark: #1e293b;
   --accent-color: #003366;
-  --secondary-bg: #E0DCD1;
-  --third-bg: #EEE7DD;
+  --secondary-bg: #F8FAFC; /*Fondo central*/
+  --third-bg: #F1F5F9; /*Fondo sidebar*/
 }
 
 html {
