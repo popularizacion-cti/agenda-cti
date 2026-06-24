@@ -281,7 +281,7 @@ function buildCard(a) {
     <div><strong>Modalidad:</strong> ${a["Modalidad"]}</div>
   `;
 
-  if (a["Modalidad"] === "Presencial") {
+  if (a["Modalidad"] === "Presencial - abierta al público") {
     html += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>`;
   }
 
@@ -297,7 +297,7 @@ function buildCard(a) {
       </div>`;
   }
 
-  if (a["Modalidad"] === "Híbrida (presencial con transmisión online)") {
+  if (a["Modalidad"] === "Híbrida (público asisten presencial y hay transmisión online)") {
     html += `
       <div><strong>Lugar del evento:</strong> ${a["Lugar del evento"]}</div>
       <div><strong>Enlace del evento:</strong>
