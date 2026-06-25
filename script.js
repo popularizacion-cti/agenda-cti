@@ -33,6 +33,26 @@ function mostrarFecha(valor) {
   ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
+function procesarEnlace(textoInicial) {
+  if (!textoInicial) return ""; 
+
+  const urlRegex = /(https?:\/\/[^\s]+)/;
+  const coincidencia = textoInicial.match(urlRegex);
+
+  if (coincidencia) {
+    const urlPura = coincidencia[0];
+    const textoSobrante = textoInicial.replace(urlPura, '').trim();
+
+    if (textoSobrante !== "") {
+      return `${textoSobrante} <a href="${urlPura}" target="_blank">${urlPura}</a>`;
+    } else {
+      return `<a href="${urlPura}" target="_blank">${urlPura}</a>`;
+    }
+  } else {
+    return textoInicial;
+  }
+}
+
 /* =======================
    HORAS
 ======================= */
@@ -285,26 +305,6 @@ function buildCard(a) {
     html += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento (dirección, distrito, provincia, nombre de auditorio, facultad, etc.)"]}</div>`;
   }
 
-  function procesarEnlace(textoInicial) {
-    if (!textoInicial) return ""; 
-  
-    const urlRegex = /(https?:\/\/[^\s]+)/;
-    const coincidencia = textoInicial.match(urlRegex);
-  
-    if (coincidencia) {
-      const urlPura = coincidencia[0];
-      const textoSobrante = textoInicial.replace(urlPura, '').trim();
-  
-      if (textoSobrante !== "") {
-        return `${textoSobrante} <a href="${urlPura}" target="_blank">${urlPura}</a>`;
-      } else {
-        return `<a href="${urlPura}" target="_blank">${urlPura}</a>`;
-      }
-    } else {
-      return textoInicial;
-    }
-  }
-  
   const enlaceListoParaUsar = procesarEnlace(a["Enlace del evento"]);
   
   if (
