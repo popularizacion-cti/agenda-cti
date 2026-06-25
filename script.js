@@ -285,25 +285,43 @@ function buildCard(a) {
     html += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento (dirección, distrito, provincia, nombre de auditorio, facultad, etc.)"]}</div>`;
   }
 
+  function procesarEnlace(textoInicial) {
+    if (!textoInicial) return ""; 
+  
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    const coincidencia = textoInicial.match(urlRegex);
+  
+    if (coincidencia) {
+      const urlPura = coincidencia[0];
+      const textoSobrante = textoInicial.replace(urlPura, '').trim();
+  
+      if (textoSobrante !== "") {
+        return `${textoSobrante} <a href="${urlPura}" target="_blank">${urlPura}</a>`;
+      } else {
+        return `<a href="${urlPura}" target="_blank">${urlPura}</a>`;
+      }
+    } else {
+      return textoInicial;
+    }
+  }
+  
+  const enlaceListoParaUsar = procesarEnlace(a["Enlace del evento"]);
+  
   if (
     a["Modalidad"] === "Virtual" ||
     a["Modalidad"] === "Publicaciones (Infografias, videos, podcast, etc)"
   ) {
     html += `
-      <div><strong>Enlace del evento:</strong>
-        <a href="${a["Enlace del evento"]}" target="_blank">
-          ${a["Enlace del evento"]}
-        </a>
+      <div><strong>Enlace del evento:</strong> 
+        ${enlaceListoParaUsar}
       </div>`;
   }
-
+  
   if (a["Modalidad"] === "Híbrida (público asisten presencial y hay transmisión online)") {
     html += `
       <div><strong>Lugar del evento:</strong> ${a["Lugar del evento (dirección, distrito, provincia, nombre de auditorio, facultad, etc.)"]}</div>
-      <div><strong>Enlace del evento:</strong>
-        <a href="${a["Enlace del evento"]}" target="_blank">
-          ${a["Enlace del evento"]}
-        </a>
+      <div><strong>Enlace del evento:</strong> 
+        ${enlaceListoParaUsar}
       </div>`;
   }
 
