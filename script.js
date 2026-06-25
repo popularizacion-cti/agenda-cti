@@ -35,22 +35,24 @@ function mostrarFecha(valor) {
 
 function procesarEnlace(textoInicial) {
   if (!textoInicial) return ""; 
+  const lineas = textoInicial.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+  const lineasProcesadas = lineas.map(linea => {
+    const urlRegex = /(https?:\/\/[^\s]+)/;
+    const coincidencia = linea.match(urlRegex);
+    if (coincidencia) {
+      const urlPura = coincidencia[0];
+      const textoSobrante = linea.replace(urlPura, '').trim();
 
-  const urlRegex = /(https?:\/\/[^\s]+)/;
-  const coincidencia = textoInicial.match(urlRegex);
-
-  if (coincidencia) {
-    const urlPura = coincidencia[0];
-    const textoSobrante = textoInicial.replace(urlPura, '').trim();
-
-    if (textoSobrante !== "") {
-      return `${textoSobrante} <a href="${urlPura}" target="_blank">${urlPura}</a>`;
+      if (textoSobrante !== "") {
+        return `${textoSobrante} <a href="${urlPura}" target="_blank" style="word-break: break-all;">${urlPura}</a>`;
+      } else {
+        return `<a href="${urlPura}" target="_blank" style="word-break: break-all;">${urlPura}</a>`;
+      }
     } else {
-      return `<a href="${urlPura}" target="_blank">${urlPura}</a>`;
+      return linea;
     }
-  } else {
-    return textoInicial;
-  }
+  });
+  return lineasProcesadas.join('<br><br>');
 }
 
 /* =======================
