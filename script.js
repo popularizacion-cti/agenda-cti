@@ -39,20 +39,22 @@ function procesarEnlace(textoInicial) {
   const lineasProcesadas = lineas.map(linea => {
     const urlRegex = /(https?:\/\/[^\s]+)/;
     const coincidencia = linea.match(urlRegex);
+    let contenidoLinea = "";
     if (coincidencia) {
       const urlPura = coincidencia[0];
       const textoSobrante = linea.replace(urlPura, '').trim();
 
       if (textoSobrante !== "") {
-        return `${textoSobrante} <a href="${urlPura}" target="_blank" style="word-break: break-all;">${urlPura}</a>`;
+        contenidoLinea = `${textoSobrante} <a href="${urlPura}" target="_blank" style="word-break: break-all;">${urlPura}</a>`;
       } else {
-        return `<a href="${urlPura}" target="_blank" style="word-break: break-all;">${urlPura}</a>`;
+        contenidoLinea = `<a href="${urlPura}" target="_blank" style="word-break: break-all;">${urlPura}</a>`;
       }
     } else {
-      return linea;
+      contenidoLinea = linea;
     }
+    return `<div style="margin-top: 5px; margin-left: 15px;">${contenidoLinea}</div>`;
   });
-  return lineasProcesadas.join('<br><br>');
+  return lineasProcesadas.join('');
 }
 
 /* =======================
