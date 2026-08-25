@@ -188,7 +188,7 @@ function renderWeeklyAgenda(list) {
 
 function buildFilters(list) {
   const div = document.getElementById("filtros-cti");
-  const uniq = arr => [...new Set(arr)].filter(Boolean).sort();
+  const uniq = arr => [...new Set(arr)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'));
   const regiones = uniq(list.map(a => a["Región"]));
   const modalidades = uniq(list.map(a => a["Modalidad"]));
   const publicos = uniq(list.flatMap(a => a._publicos));
