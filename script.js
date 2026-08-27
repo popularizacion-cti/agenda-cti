@@ -33,13 +33,16 @@ function mostrarFecha(valor) {
   ).padStart(2, "0")}/${d.getFullYear()}`;
 }
 
+// Función homogeneizada para procesar enlaces
 function procesarEnlace(textoInicial) {
   if (!textoInicial) return ""; 
   const lineas = textoInicial.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
+  
   const lineasProcesadas = lineas.map(linea => {
     const urlRegex = /(https?:\/\/[^\s]+)/;
     const coincidencia = linea.match(urlRegex);
     let contenidoLinea = "";
+    
     if (coincidencia) {
       const urlPura = coincidencia[0];
       const textoSobrante = linea.replace(urlPura, '').trim();
@@ -52,9 +55,17 @@ function procesarEnlace(textoInicial) {
     } else {
       contenidoLinea = linea;
     }
-    return `<div style="margin-top: 5px; margin-left: 15px;">${contenidoLinea}</div>`;
+    
+    return contenidoLinea;
   });
-  return lineasProcesadas.join('');
+
+  // Si es solo 1 enlace, lo devuelve en la misma línea. 
+  // Si son varios, les aplica el div con sangría para listarlos.
+  if (lineasProcesadas.length === 1) {
+    return lineasProcesadas[0];
+  } else {
+    return lineasProcesadas.map(l => `<div style="margin-top: 0px; margin-left: 15px;">${l}</div>`).join('');
+  }
 }
 
 /* =======================
@@ -125,12 +136,9 @@ function ordenarPorFechaYHora(lista) {
     const obtenerDecimal = (h) => {
       if (!h) return 0;
       
-      // ¡AQUÍ ESTÁ LA MAGIA! Pasamos el valor crudo por tu función limpiadora primero
       const horaLimpia = limpiarHora(h);
       if (!horaLimpia) return 0;
 
-      // Ahora sí, horaLimpia es un formato amigable como "09:30".
-      // Reemplazamos los dos puntos por un punto para volverlo decimal (ej. "09.30")
       const inicio = horaLimpia.split("-")[0].trim().replace(":", ".");
       return parseFloat(inicio) || 0;
     };
@@ -188,7 +196,9 @@ function renderWeeklyAgenda(list) {
 
 function buildFilters(list) {
   const div = document.getElementById("filtros-cti");
+  // Aquí está el localeCompare para arreglar el orden de "Áncash" y palabras con tildes
   const uniq = arr => [...new Set(arr)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'es'));
+  
   const regiones = uniq(list.map(a => a["Región"]));
   const modalidades = uniq(list.map(a => a["Modalidad"]));
   const publicos = uniq(list.flatMap(a => a._publicos));
@@ -203,7 +213,6 @@ function buildFilters(list) {
     <input type="date" id="f-hasta">
   `;
 
-  // Insertar los botones centrados dentro del panel blanco
   let btnContainer = document.querySelector(".btn-container-center");
   if (!btnContainer) {
     btnContainer = document.createElement("div");
@@ -258,7 +267,6 @@ function f(id) {
 function renderFilterResults(list) {
   const div = document.getElementById("resultados-filtro");
   
-  // Si no hay lista (limpieza), vaciamos y salimos
   if (!list) {
     div.innerHTML = "";
     return;
@@ -272,9 +280,6 @@ function renderFilterResults(list) {
   }
 
   list.forEach(a => div.appendChild(buildCard(a)));
-  
-  // Opcional: Hacer scroll automático hacia los resultados
-  // div.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /* =======================
@@ -309,6 +314,7 @@ function buildCard(a) {
     html += `<div><strong>Lugar del evento:</strong> ${a["Lugar del evento (dirección, distrito, provincia, nombre de auditorio, facultad, etc.)"]}</div>`;
   }
 
+  // Ahora procesarEnlace es inteligente: Si es 1, no hace lista; si son varios, sí.
   const enlaceListoParaUsar = procesarEnlace(a["Enlace del evento"]);
   
   if (
@@ -341,30 +347,12 @@ function buildCard(a) {
       </div>`;
   }
 
+  // Simplificamos "Más información" para usar la misma lógica robusta.
   if (a["Enlace para más información"]) {
-    const links = a["Enlace para más información"].split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
-
-    if (links.length === 1) {
-      html += `
-        <div><strong>Más información:</strong> 
-          <a href="${links[0]}" target="_blank" style="word-break: break-all;">
-            ${links[0]}
-          </a>
-        </div>`;
-    } else if (links.length > 1) {
-      html += `<div><strong>Más información:</strong>`;
-      
-      links.forEach(link => {
-        html += `
-          <div style="margin-top: 5px; margin-left: 15px;">
-            <a href="${link}" target="_blank" style="word-break: break-all;">
-              ${link}
-            </a>
-          </div>`;
-      });
-
-      html += `</div>`;
-    }
+    html += `
+      <div><strong>Más información:</strong> 
+        ${procesarEnlace(a["Enlace para más información"])}
+      </div>`;
   }
 
   if (a["Información adicional que se debe detallar en la agenda"]) {
